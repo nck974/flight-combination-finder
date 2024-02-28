@@ -97,7 +97,7 @@ public class RyanairService implements AirlineService {
                 flights = toFlightDTO(response);
             } else {
                 throw new ErrorFetchingDataException(
-                        "Failed to fetch data from external API. Status code: " + response.getStatus(),
+                        "Failed to fetch data from Ryanair API. Status code: " + response.getStatus(),
                         response.getStatus());
             }
         } finally {

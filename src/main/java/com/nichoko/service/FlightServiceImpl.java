@@ -7,18 +7,19 @@ import com.nichoko.domain.dao.Flight;
 import com.nichoko.domain.dto.FlightDTO;
 import com.nichoko.domain.mapper.FlightMapper;
 import com.nichoko.repository.FlightRepository;
+import com.nichoko.service.interfaces.FlightService;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class FlightService {
+public class FlightServiceImpl implements FlightService {
     FlightMapper mapper;
     private FlightRepository flightRepository;
 
     @Inject
-    FlightService(FlightMapper mapper, FlightRepository flightRepository) {
+    FlightServiceImpl(FlightMapper mapper, FlightRepository flightRepository) {
         this.mapper = mapper;
         this.flightRepository = flightRepository;
     }
@@ -30,7 +31,12 @@ public class FlightService {
         return mapper.toDTO(flight);
     }
 
-    public List<FlightDTO> listFlights() {
+    @Transactional
+    public List<FlightDTO> saveFlights(List<FlightDTO> flights) {
+        return flights.stream().map(this::saveFlight).collect(Collectors.toList());
+    }
+
+    public List<FlightDTO> listSavedFlights() {
         return flightRepository.listAll()
                 .stream()
                 .map(flight -> mapper.toDTO(flight))

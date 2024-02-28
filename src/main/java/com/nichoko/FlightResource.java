@@ -8,6 +8,7 @@ import org.jboss.resteasy.reactive.RestResponse;
 import com.nichoko.domain.dto.FlightDTO;
 import com.nichoko.domain.dto.FlightQueryDTO;
 import com.nichoko.service.interfaces.AirlineService;
+import com.nichoko.service.interfaces.FlightService;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -24,10 +25,12 @@ public class FlightResource {
     private Logger logger = Logger.getLogger(FlightResource.class);
 
     private AirlineService airlineService;
+    private FlightService flightService;
 
     @Inject
-    FlightResource(AirlineService airlineService) {
+    FlightResource(AirlineService airlineService, FlightService flightService) {
         this.airlineService = airlineService;
+        this.flightService = flightService;
     }
 
     @POST
@@ -35,6 +38,12 @@ public class FlightResource {
         logger.info("Checking flights " + query.getOrigin() + " to " + query.getDestination() + "...");
         List<FlightDTO> flights = airlineService.getCompanyFlights(query);
         logger.info("Flights found: " + flights.size());
+
+        if (!flights.isEmpty()) {
+            logger.info("Saving to the database " + query.getOrigin() + " to " + query.getDestination() + "...");
+            flights = flightService.saveFlights(flights);
+        }
+
         return RestResponse.ok(flights);
     }
 }
