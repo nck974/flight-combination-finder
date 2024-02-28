@@ -1,5 +1,7 @@
 package com.nichoko;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.logging.Logger;
@@ -43,6 +45,24 @@ public class FlightResource {
             logger.info("Saving to the database " + query.getOrigin() + " to " + query.getDestination() + "...");
             flights = flightService.saveFlights(flights);
         }
+
+        return RestResponse.ok(flights);
+    }   
+    
+    @Path("/test")
+    @POST
+    public RestResponse<List<FlightDTO>> getAllFlightsTest(FlightQueryDTO query) {
+        List<FlightDTO> flights = new ArrayList<>();
+
+        FlightDTO flight = new FlightDTO();
+        flight.setOrigin("STD");
+        flight.setDestination("NUE");
+        flight.setPrice(19.99f);
+        flight.setLandingDate(LocalDateTime.now());
+        flight.setDepartureDate(LocalDateTime.now());
+        flight.setId(1l);
+        flight.setCreatedAt(LocalDateTime.now());
+        flights.add(flight);
 
         return RestResponse.ok(flights);
     }
