@@ -8,7 +8,7 @@ import com.nichoko.domain.dto.FlightDTO;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
-@Mapper(componentModel = "cdi", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "jakarta", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 @ApplicationScoped
 public interface FlightMapper {
 

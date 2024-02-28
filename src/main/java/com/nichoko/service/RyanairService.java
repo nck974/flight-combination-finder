@@ -3,6 +3,7 @@ package com.nichoko.service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.jboss.logging.Logger;
@@ -78,6 +79,7 @@ public class RyanairService implements AirlineService {
             throw new ErrorFetchingDataException("No flights found", 400);
         }
 
+        flights.sort(Comparator.comparing(FlightDTO::getDepartureDate));
         return flights;
 
     }

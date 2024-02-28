@@ -3,6 +3,8 @@ package com.nichoko.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jboss.logging.Logger;
+
 import com.nichoko.domain.dao.Flight;
 import com.nichoko.domain.dto.FlightDTO;
 import com.nichoko.domain.mapper.FlightMapper;
@@ -15,6 +17,9 @@ import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class FlightServiceImpl implements FlightService {
+
+    private Logger logger = Logger.getLogger(FlightServiceImpl.class);
+
     FlightMapper mapper;
     private FlightRepository flightRepository;
 
@@ -26,7 +31,9 @@ public class FlightServiceImpl implements FlightService {
 
     @Transactional
     public FlightDTO saveFlight(FlightDTO flightDTO) {
+        logger.info("Saving into the database " + flightDTO.getOrigin() + " - " + flightDTO.getDestination() + "...");
         Flight flight = mapper.toDAO(flightDTO);
+        logger.info("Persisting into the database " + flight.origin + " - " + flight.destination + "...");
         flightRepository.persistAndFlush(flight);
         return mapper.toDTO(flight);
     }

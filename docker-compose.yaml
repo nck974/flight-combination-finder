@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  flight-combinanation-finder:
+    container_name: flight-combinanation-finder
+    image: quarkus/flight-combination-finder-jvm
+    restart: unless-stopped
+    depends_on:
+      - flightsdatabase
+    ports:
+      - 8080:8080
+
+  flightsdatabase:
+    container_name: flightsdatabase
+    image: postgres:16.2-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=flights
+      - POSTGRES_PASSWORD=flights
+      - POSTGRES_DB=flights
+    ports:
+      - 5439:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+
+volumes:
+  db:
+    driver: local
+    name: flightsdatabase
