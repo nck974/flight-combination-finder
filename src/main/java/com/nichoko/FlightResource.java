@@ -37,12 +37,12 @@ public class FlightResource {
 
     @POST
     public RestResponse<List<FlightDTO>> getAllFlights(FlightQueryDTO query) {
-        logger.info("Checking flights " + query.getOrigin() + " to " + query.getDestination() + "...");
+        logger.info("Checking flights:\n" + query.getRoutesCombinations() + "...");
         List<FlightDTO> flights = airlineService.getCompanyFlights(query);
         logger.info("Flights found: " + flights.size());
 
         if (!flights.isEmpty()) {
-            logger.info("Saving to the database " + query.getOrigin() + " to " + query.getDestination() + "...");
+            logger.info("Saving to the database:\n" + query.getRoutesCombinations() + "...");
             flights = flightService.saveFlights(flights);
         }
 
@@ -73,6 +73,16 @@ public class FlightResource {
         flight2.setId(1l);
         flight2.setCreatedAt(LocalDateTime.now());
         flights.add(flight2);
+
+        FlightDTO flight3 = new FlightDTO();
+        flight3.setOrigin("NUE");
+        flight3.setDestination("MUC");
+        flight3.setPrice(20.99f);
+        flight3.setDepartureDate(LocalDateTime.of(2024, 3, 8, 23, 47, 0));
+        flight3.setLandingDate(LocalDateTime.of(2024, 3, 9, 2, 47, 0));
+        flight3.setId(1l);
+        flight3.setCreatedAt(LocalDateTime.now());
+        flights.add(flight3);
 
         return RestResponse.ok(flights);
     }

@@ -11,6 +11,7 @@ import org.jboss.logging.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nichoko.domain.dto.FlightDTO;
 import com.nichoko.domain.dto.FlightQueryDTO;
+import com.nichoko.domain.dto.FlightQueryDTO.RouteCombination;
 import com.nichoko.exception.ErrorFetchingDataException;
 import com.nichoko.service.interfaces.AirlineService;
 
@@ -24,25 +25,30 @@ public class RyanairService implements AirlineService {
 
     private Logger logger = Logger.getLogger(RyanairService.class);
 
-    private String buildURL(FlightQueryDTO query) {
-        StringBuilder urlBuilder = new StringBuilder("https://www.ryanair.com/api/farfnd/v4/roundTripFares?");
-        urlBuilder.append("departureAirportIataCode=").append(query.getOrigin())
-                .append("&outboundDepartureDateFrom=").append(query.getStartDate())
-                .append("&market=").append("en-gb") // Change to de?
-                .append("&adultPaxCount=").append(1)
-                .append("&arrivalAirportIataCode=").append(query.getDestination())
-                .append("&searchMode=").append("ALL")
-                .append("&outboundDepartureDateTo=").append(query.getEndDate())
-                .append("&inboundDepartureDateFrom=").append(query.getStartDate())
-                .append("&inboundDepartureDateTo=").append(query.getEndDate())
-                .append("&durationFrom=").append(1)
-                .append("&durationTo=").append(7)
-                .append("&outboundDepartureTimeFrom=").append("00:00")
-                .append("&outboundDepartureTimeTo=").append("23:59")
-                .append("&inboundDepartureTimeFrom=").append("00:00")
-                .append("&inboundDepartureTimeTo=").append("23:59");
+    private List<String> buildUrls(FlightQueryDTO query) {
+        List<String> urls = new ArrayList<>();
 
-        return urlBuilder.toString();
+        for (RouteCombination route : query.getRoutes()) {
+            StringBuilder urlBuilder = new StringBuilder("https://www.ryanair.com/api/farfnd/v4/roundTripFares?");
+            urlBuilder.append("departureAirportIataCode=").append(route.getOrigin())
+                    .append("&outboundDepartureDateFrom=").append(query.getStartDate())
+                    .append("&market=").append("en-gb") // Change to de?
+                    .append("&adultPaxCount=").append(1)
+                    .append("&arrivalAirportIataCode=").append(route.getDestination())
+                    .append("&searchMode=").append("ALL")
+                    .append("&outboundDepartureDateTo=").append(query.getEndDate())
+                    .append("&inboundDepartureDateFrom=").append(query.getStartDate())
+                    .append("&inboundDepartureDateTo=").append(query.getEndDate())
+                    .append("&durationFrom=").append(1)
+                    .append("&durationTo=").append(7)
+                    .append("&outboundDepartureTimeFrom=").append("00:00")
+                    .append("&outboundDepartureTimeTo=").append("23:59")
+                    .append("&inboundDepartureTimeFrom=").append("00:00")
+                    .append("&inboundDepartureTimeTo=").append("23:59");
+            urls.add(urlBuilder.toString());
+        }
+
+        return urls;
     }
 
     List<FlightDTO> toFlightDTO(Response response) {
@@ -84,10 +90,7 @@ public class RyanairService implements AirlineService {
 
     }
 
-    @Override
-    public List<FlightDTO> getCompanyFlights(FlightQueryDTO query) {
-        String url = buildURL(query);
-
+    private List<FlightDTO> sendGetFlightsQuery(String url) {
         Client client = ClientBuilder.newClient();
 
         List<FlightDTO> flights;
@@ -106,6 +109,18 @@ public class RyanairService implements AirlineService {
             client.close();
         }
         return flights;
+    }
+
+    @Override
+    public List<FlightDTO> getCompanyFlights(FlightQueryDTO query) {
+        List<String> urls = buildUrls(query);
+
+        List<FlightDTO> flights = new ArrayList<>();
+        for (String url : urls) {
+            flights.addAll(this.sendGetFlightsQuery(url));
+        }
+        return flights;
+
     }
 
 }

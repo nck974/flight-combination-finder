@@ -1,7 +1,9 @@
 package com.nichoko.domain.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -10,8 +12,23 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 public class FlightQueryDTO {
-    private String origin;
-    private String destination;
+    private List<RouteCombination> routes;
     private LocalDate startDate;
     private LocalDate endDate;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class RouteCombination {
+        private String origin;
+        private String destination;
+    }
+
+    public String getRoutesCombinations() {
+        StringBuilder routeStringBuilder = new StringBuilder();
+        for (RouteCombination route : this.routes) {
+            routeStringBuilder.append(route.getOrigin() + " -> " + route.getDestination() + "\n");
+        }
+        return routeStringBuilder.toString();
+    }
 }
