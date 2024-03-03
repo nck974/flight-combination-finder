@@ -47,8 +47,8 @@ public class FlightResource {
         }
 
         return RestResponse.ok(flights);
-    }   
-    
+    }
+
     @Path("/test")
     @POST
     public RestResponse<List<FlightDTO>> getAllFlightsTest(FlightQueryDTO query) {
@@ -58,8 +58,8 @@ public class FlightResource {
         flight.setOrigin("STD");
         flight.setDestination("NUE");
         flight.setPrice(19.99f);
-        flight.setLandingDate(LocalDateTime.now());
-        flight.setDepartureDate(LocalDateTime.now());
+        flight.setDepartureDate(LocalDateTime.of(2024, 3, 5, 12, 47, 0));
+        flight.setLandingDate(LocalDateTime.of(2024, 3, 5, 15, 47, 0));
         flight.setId(1l);
         flight.setCreatedAt(LocalDateTime.now());
         flights.add(flight);

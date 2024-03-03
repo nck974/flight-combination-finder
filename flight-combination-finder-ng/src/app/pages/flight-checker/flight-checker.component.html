@@ -1,0 +1,8 @@
+<app-search-flights-form
+    (onSearch)="onSearchFlights($event)"></app-search-flights-form>
+
+@if(isLoading){
+Loading...
+}@else {
+<app-display-flights [flights]="flights" [query]="query"></app-display-flights>
+}

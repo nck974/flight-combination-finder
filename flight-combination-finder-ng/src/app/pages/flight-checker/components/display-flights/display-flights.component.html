@@ -1,0 +1,35 @@
+@if(query && flightsByDate){
+<div class="table">
+  <!-- Header -->
+  <div>Day</div>
+  <div>Hour</div>
+  <div>{{query.origin}} - {{query.destination}}</div>
+  @for (date of dates; track date){
+
+  <!-- Date -->
+  <div class="day-cell">
+    {{date | dateFormat}}
+  </div>
+
+  <!-- Hour -->
+  @for( hour of hours; track hour; let hourIndex=$index){
+  <div class="hour">{{hour}}:00</div>
+  <div class="event-container">
+    @if(flightsByDateAndHour[date.toDateString()+hour]){
+
+    <!-- Flights in hour -->
+    @for( flight of flightsByDateAndHour[date.toDateString()+hour]; track
+    flight){
+    <div
+      class="event color-{{hourIndex}}-{{$index}} duration-{{flight.duration}}">
+      {{flight.price}}€  {{flight.departureDate | timeFormat}} ->
+      {{flight.landingDate | timeFormat}}
+    </div>
+    }
+    }
+  </div>
+  }
+  }
+
+</div>
+}

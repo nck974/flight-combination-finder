@@ -1,0 +1,20 @@
+<form #myForm="ngForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="origin">Origin:</label>
+      <input type="text" id="origin" name="origin" [(ngModel)]="formData.origin" required>
+    </div>
+    <div>
+      <label for="destination">Destination:</label>
+      <input type="text" id="destination" name="destination" [(ngModel)]="formData.destination" required>
+    </div>
+    <div>
+      <label for="startDate">Start Date:</label>
+      <input type="date" id="startDate" name="startDate" [(ngModel)]="formData.startDate" required>
+    </div>
+    <div>
+      <label for="endDate">End Date:</label>
+      <input type="date" id="endDate" name="endDate" [(ngModel)]="formData.endDate" required>
+    </div>
+    <button type="submit" [disabled]="!myForm.valid">Submit</button>
+  </form>
+  

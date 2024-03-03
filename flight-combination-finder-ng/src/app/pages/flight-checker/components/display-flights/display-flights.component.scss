@@ -1,0 +1,54 @@
+div {
+    border: 1px solid black;
+    // padding: 0.5rem;
+}
+
+.table {
+    display: grid;
+    grid-template-columns: min-content min-content 10rem;
+    grid-template-rows: 2.5rem;
+    white-space: nowrap;
+    grid-auto-rows: 2.5rem;
+    // gap: 3px;
+    width: min-content;
+}
+
+.day-cell {
+    grid-row: span 24;
+}
+
+.event-container {
+    position: relative;
+}
+
+.event {
+    position: absolute;
+    display: flex;
+    width: 10rem;
+    white-space: break-spaces;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    justify-content: center;
+    border-radius: 10px;
+    // height: 2.5*3rem;
+}
+
+// Set height of the duration
+@for $i from 0 through 10 {
+    .duration-#{$i} {
+        height: $i * 2.5rem;
+    }
+}
+
+// Set random colors for each flight
+@for $i from 0 through 24 {
+    @for $j from 0 through 5 {
+        .color-#{$i}-#{$j} {
+            background-color: rgba(random(255), // Randomize red component
+                    random(255), // Randomize green component
+                    random(255), // Randomize blue component
+                    0.5);
+        }
+    }
+}
