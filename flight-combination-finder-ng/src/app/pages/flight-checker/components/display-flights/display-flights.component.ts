@@ -17,8 +17,8 @@ export class DisplayFlightsComponent implements OnInit {
 
   dates: Date[] = [];
   hours = Array.from({ length: 24 }, (_, index) => `${index}`);
-  flightsByDate: { [date: string]: Flight[] } = {};
   flightsByDateAndHour: { [date: string]: Flight[] } = {};
+  dayWithFlight: { [date: string]: boolean } = {};
 
   ngOnInit(): void {
     if (this.query) {
@@ -27,29 +27,26 @@ export class DisplayFlightsComponent implements OnInit {
       this.setDatesInRange(this.query);
     }
     if (this.flights) {
-      this.groupFlightsByDate(this.flights);
       this.groupFlightsByDateAnHour(this.flights);
     }
   }
 
-  groupFlightsByDate(flights: Flight[]): void {
-    for (const flight of flights) {
-      const dateKey = flight.departureDate.toDateString();
-      if (!this.flightsByDate[dateKey]) {
-        this.flightsByDate[dateKey] = [];
-      }
-      this.flightsByDate[dateKey].push(flight);
-    }
-    // console.log(this.flightsByDate)
-  }
 
   groupFlightsByDateAnHour(flights: Flight[]): void {
+    // Reset fields
+    this.flightsByDateAndHour = {};
+    this.dayWithFlight = {};
+
+    // Loop through all flights to setup the form
     for (const flight of flights) {
-      const dateKey = `${flight.departureDate.toDateString()}${flight.departureDate.getHours()}`;
-      if (!this.flightsByDateAndHour[dateKey]) {
-        this.flightsByDateAndHour[dateKey] = [];
+      const dateTimeKey = `${flight.departureDate.toDateString()}${flight.departureDate.getHours()}`;
+      if (!this.flightsByDateAndHour[dateTimeKey]) {
+        this.flightsByDateAndHour[dateTimeKey] = [];
       }
-      this.flightsByDateAndHour[dateKey].push(flight);
+      this.flightsByDateAndHour[dateTimeKey].push(flight);
+      this.dayWithFlight[flight.departureDate.toDateString()] = true;
+      // Save also the landing date for multi-day flights
+      this.dayWithFlight[flight.landingDate.toDateString()] = true;
     }
     console.log(this.flightsByDateAndHour)
   }

@@ -1,11 +1,12 @@
-@if(query && flightsByDate){
+@if(query && flightsByDateAndHour && dayWithFlight){
 <div class="table">
   <!-- Header -->
   <div>Day</div>
   <div>Hour</div>
   <div>{{query.origin}} - {{query.destination}}</div>
   @for (date of dates; track date){
-
+  <!-- Only show days with flights -->
+  @if(dayWithFlight[date.toDateString()]){
   <!-- Date -->
   <div class="day-cell">
     {{date | dateFormat}}
@@ -22,12 +23,13 @@
     flight){
     <div
       class="event color-{{hourIndex}}-{{$index}} duration-{{flight.duration}}">
-      {{flight.price}}€  {{flight.departureDate | timeFormat}} ->
+      {{flight.price}}€ {{flight.departureDate | timeFormat}} ->
       {{flight.landingDate | timeFormat}}
     </div>
     }
     }
   </div>
+  }
   }
   }
 

@@ -64,6 +64,16 @@ public class FlightResource {
         flight.setCreatedAt(LocalDateTime.now());
         flights.add(flight);
 
+        FlightDTO flight2 = new FlightDTO();
+        flight2.setOrigin("STD");
+        flight2.setDestination("NUE");
+        flight2.setPrice(20.99f);
+        flight2.setDepartureDate(LocalDateTime.of(2024, 3, 8, 23, 47, 0));
+        flight2.setLandingDate(LocalDateTime.of(2024, 3, 9, 2, 47, 0));
+        flight2.setId(1l);
+        flight2.setCreatedAt(LocalDateTime.now());
+        flights.add(flight2);
+
         return RestResponse.ok(flights);
     }
 }
