@@ -1,0 +1,27 @@
+.form-wrapper{
+    padding: 1rem;
+}
+
+.form-wrapper form{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.routes{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem
+}
+
+.route,
+.date,
+.control{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.form-wrapper form label{
+    margin-right: 0.25rem;
+}

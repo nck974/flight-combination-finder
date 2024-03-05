@@ -1,20 +1,53 @@
-<form #myForm="ngForm" (ngSubmit)="onSubmit()">
-    <div>
-      <label for="origin">Origin:</label>
-      <input type="text" id="origin" name="origin" [(ngModel)]="formData.origin" required>
+<div class="form-wrapper">
+  <form #myForm [formGroup]="formQuery" (ngSubmit)="onSubmit()">
+
+    <!-- Routes -->
+    <div class="routes" formArrayName="routes">
+      @for(route of routesControl.controls; track route; let i = $index){
+      <div class="route" [formGroupName]="i">
+        <div>
+          <label class="form-label" for="origin">Origin:</label>
+          <input class="form-field" type="text" id="origin-{{i}}" name="origin-{{i}}"
+            formControlName="origin"
+            required>
+        </div>
+        <div>
+          <label class="form-label" for="destination">Destination:</label>
+          <input class="form-field" type="text" id="destination"
+            name="destination"
+            formControlName="destination" required>
+        </div>
+        <div>
+          <button type="button" (click)="onAddRoute()">Add</button>
+        </div>
+        @if(i != 0){
+        <div>
+          <button type="button" (click)="onRemoveRoute(i)">Delete</button>
+        </div>
+        }
+      </div>
+      }
     </div>
-    <div>
-      <label for="destination">Destination:</label>
-      <input type="text" id="destination" name="destination" [(ngModel)]="formData.destination" required>
+
+    <!-- Dates -->
+    <div class="date">
+      <div>
+        <label class="form-label" for="startDate">Start Date:</label>
+        <input class="form-field" type="date" id="startDate" name="startDate"
+          formControlName="startDate" required>
+      </div>
+      <div>
+        <label class="form-label" for="endDate">End Date:</label>
+        <input class="form-field" type="date" id="endDate" name="endDate"
+          formControlName="endDate"
+          required>
+      </div>
     </div>
-    <div>
-      <label for="startDate">Start Date:</label>
-      <input type="date" id="startDate" name="startDate" [(ngModel)]="formData.startDate" required>
+
+    <!-- Controls -->
+    <div class="control">
+      <button type="submit" [disabled]="!formQuery.valid">Search</button>
     </div>
-    <div>
-      <label for="endDate">End Date:</label>
-      <input type="date" id="endDate" name="endDate" [(ngModel)]="formData.endDate" required>
-    </div>
-    <button type="submit" [disabled]="!myForm.valid">Submit</button>
   </form>
-  
+
+</div>

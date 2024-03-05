@@ -1,17 +1,22 @@
 div {
     border: 1px solid black;
-    // padding: 0.5rem;
 }
 
 .table {
     display: grid;
-    grid-template-columns: min-content min-content 10rem;
     grid-template-rows: 2.5rem;
     white-space: nowrap;
     grid-auto-rows: 2.5rem;
-    // gap: 3px;
     width: min-content;
 }
+
+// Create different column sizes depending on the nr of combinations
+@for $i from 0 through 10 {
+    .table-#{$i}-columns {
+        grid-template-columns: min-content min-content repeat($i, 10rem);
+    }
+}
+
 
 .day-cell {
     grid-row: span 24;
@@ -31,7 +36,6 @@ div {
     text-align: center;
     justify-content: center;
     border-radius: 10px;
-    // height: 2.5*3rem;
 }
 
 // Set height of the duration

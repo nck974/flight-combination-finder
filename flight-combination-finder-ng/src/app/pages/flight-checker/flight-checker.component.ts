@@ -17,8 +17,16 @@ export class FlightCheckerComponent implements OnDestroy {
   private flightSearchSubscription?: Subscription;
   isLoading = false;
   query?: FlightQuery = {
-    origin: "STD",
-    destination: "NUE",
+    routes: [
+      {
+        origin: "NUE",
+        destination: "STD",
+      },
+      {
+        origin: "STD",
+        destination: "SDR",
+      },
+    ],
     startDate: new Date(2024, 2, 1),
     endDate: new Date(2024, 2, 3),
   };
@@ -26,8 +34,8 @@ export class FlightCheckerComponent implements OnDestroy {
     {
       id: 1,
       createdAt: new Date(),
-      origin: "STD",
-      destination: "NUE",
+      origin: "NUE",
+      destination: "STD",
       departureDate: new Date(2024, 2, 1, 7, 30),
       landingDate: new Date(2024, 2, 1, 10, 30),
       price: 25.0,
@@ -36,8 +44,8 @@ export class FlightCheckerComponent implements OnDestroy {
     {
       id: 1,
       createdAt: new Date(),
-      origin: "STD",
-      destination: "NUE",
+      origin: "NUE",
+      destination: "STD",
       departureDate: new Date(2024, 2, 1, 13, 30),
       landingDate: new Date(2024, 2, 1, 14, 30),
       price: 15.0,
@@ -47,7 +55,7 @@ export class FlightCheckerComponent implements OnDestroy {
       id: 2,
       createdAt: new Date(),
       origin: "STD",
-      destination: "NUE",
+      destination: "SDR",
       departureDate: new Date(2024, 2, 1, 15, 30),
       landingDate: new Date(2024, 2, 1, 17, 30),
       price: 50.0,
