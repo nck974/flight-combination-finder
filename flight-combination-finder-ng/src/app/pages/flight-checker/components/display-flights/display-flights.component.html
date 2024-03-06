@@ -9,7 +9,7 @@
   <div class="flight-container">
 
     <!-- Date -->
-    <div class="day-container">
+    <div class="day-container header">
       {{date | dateFormat}}
     </div>
 
@@ -19,11 +19,11 @@
       <!-- Header -->
       @if(dateIndex == 0){
       <div class="routes-header">
-        <div class="hour">
+        <div class="hour header">
           Hour
         </div>
         @for(route of query.routes; track route){
-        <div class="header-route">
+        <div class="header-route header">
           {{route.origin}} - {{route.destination}}
         </div>
         }
@@ -57,8 +57,13 @@
           flight){
           <div
             class="event color-{{hourIndex}}-{{$index}} duration-{{flight.duration}}">
-            {{flight.price}}€ {{flight.departureDate | timeFormat}} ->
-            {{flight.landingDate | timeFormat}}
+            <div class="price">
+              {{flight.price}}€
+            </div>
+            <div class="schedule">
+              {{flight.departureDate | timeFormat}} →
+              {{flight.landingDate | timeFormat}}
+            </div>
             <br>
           </div>
           }
