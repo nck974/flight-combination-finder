@@ -5,21 +5,19 @@
 .form-wrapper form{
     display: flex;
     flex-direction: column;
-    gap: 1rem;
 }
 
 .routes{
     display: flex;
     flex-direction: column;
-    gap: 1rem
 }
 
 .route,
-.date,
 .control{
     display: flex;
     flex-direction: row;
     gap: 1rem;
+    align-items: center;
 }
 
 .form-wrapper form label{

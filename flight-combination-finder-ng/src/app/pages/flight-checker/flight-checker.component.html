@@ -2,7 +2,9 @@
     (onSearch)="onSearchFlights($event)"></app-search-flights-form>
 
 @if(isLoading){
-Loading...
+<div class="loading-wrapper">
+    <mat-spinner color="red"></mat-spinner>
+</div>
 }@else {
 <app-display-flights [flights]="flights" [query]="query"></app-display-flights>
 }

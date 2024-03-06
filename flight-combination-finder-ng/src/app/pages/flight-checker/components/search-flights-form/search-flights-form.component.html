@@ -5,49 +5,76 @@
     <div class="routes" formArrayName="routes">
       @for(route of routesControl.controls; track route; let i = $index){
       <div class="route" [formGroupName]="i">
+
+        <!-- Origin -->
         <div>
-          <label class="form-label" for="origin">Origin:</label>
-          <input class="form-field" type="text" id="origin-{{i}}" name="origin-{{i}}"
-            formControlName="origin"
-            required>
+          <mat-form-field class="example-form-field">
+            <mat-label>Origin</mat-label>
+            <input matInput type="text" formControlName="origin"
+              id="origin-{{i}}" required>
+          </mat-form-field>
         </div>
+
+        <!-- Destination -->
         <div>
-          <label class="form-label" for="destination">Destination:</label>
-          <input class="form-field" type="text" id="destination"
-            name="destination"
-            formControlName="destination" required>
+          <mat-form-field class="example-form-field">
+            <mat-label>Destination</mat-label>
+            <input matInput type="text" formControlName="destination"
+              id="destination-{{i}}" required>
+          </mat-form-field>
         </div>
+
+        <!-- Extra route controls -->
         <div>
-          <button type="button" (click)="onAddRoute()">Add</button>
+          <button mat-mini-fab color="primary" type="button"
+            (click)="onAddRoute()">
+            <mat-icon>add</mat-icon>
+          </button>
         </div>
         @if(i != 0){
         <div>
-          <button type="button" (click)="onRemoveRoute(i)">Delete</button>
+          <button mat-mini-fab color="warn" type="button"
+            (click)="onRemoveRoute(i)">
+            <mat-icon>remove</mat-icon>
+          </button>
         </div>
         }
       </div>
       }
     </div>
 
-    <!-- Dates -->
-    <div class="date">
+    <div class="control">
+
+      <!-- Dates -->
       <div>
-        <label class="form-label" for="startDate">Start Date:</label>
-        <input class="form-field" type="date" id="startDate" name="startDate"
-          formControlName="startDate" required>
+        <mat-form-field>
+          <mat-label>Enter the search range</mat-label>
+          <mat-date-range-input [formGroup]="formQuery" [rangePicker]="picker">
+            <input matStartDate formControlName="startDate"
+              placeholder="Start date">
+            <input matEndDate formControlName="endDate" placeholder="End date">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix
+            [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+
+          @if (formQuery.controls.startDate.hasError('matStartDateInvalid')) {
+          <mat-error>Invalid start date</mat-error>
+          }
+          @if (formQuery.controls.endDate.hasError('matEndDateInvalid')) {
+          <mat-error>Invalid end date</mat-error>
+          }
+        </mat-form-field>
       </div>
+
+      <!-- Submit -->
       <div>
-        <label class="form-label" for="endDate">End Date:</label>
-        <input class="form-field" type="date" id="endDate" name="endDate"
-          formControlName="endDate"
-          required>
+        <button mat-raised-button color="primary" type="submit"
+          [disabled]="!formQuery.valid">Search</button>
       </div>
+
     </div>
 
-    <!-- Controls -->
-    <div class="control">
-      <button type="submit" [disabled]="!formQuery.valid">Search</button>
-    </div>
   </form>
 
 </div>

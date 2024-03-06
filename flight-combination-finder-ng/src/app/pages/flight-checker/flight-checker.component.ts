@@ -5,11 +5,16 @@ import { DisplayFlightsComponent } from './components/display-flights/display-fl
 import { Flight } from '../../model/flight';
 import { FlightQuery } from '../../model/flight-query';
 import { Subscription, finalize } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-flight-checker',
   standalone: true,
-  imports: [SearchFlightsFormComponent, DisplayFlightsComponent],
+  imports: [
+    SearchFlightsFormComponent,
+    DisplayFlightsComponent,
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './flight-checker.component.html',
   styleUrl: './flight-checker.component.scss'
 })
@@ -62,16 +67,6 @@ export class FlightCheckerComponent implements OnDestroy {
       duration: 2,
     },
   ];
-
-  getDatesInRange(query: FlightQuery): Date[] {
-    const dates = [];
-    const currentDate = query.startDate;
-    while (currentDate <= query.endDate) {
-      dates.push(new Date(currentDate));
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    return dates;
-  }
 
   constructor(private flightService: FlightsService) { }
 
