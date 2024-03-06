@@ -95,7 +95,7 @@ public class RyanairService implements AirlineService {
 
         List<FlightDTO> flights;
         try {
-            logger.debug("Fetching url:\n" + url);
+            logger.info("Fetching url:\n" + url);
             Response response = client.target(url).request().get();
 
             if (response.getStatus() == Response.Status.OK.getStatusCode()) {

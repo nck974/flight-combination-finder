@@ -18,7 +18,7 @@ export class SearchFlightsFormComponent {
   defaultEndDate = new Date();
 
   formQuery = this.formBuilder.group({
-    routes: this.formBuilder.array([this.createNewRouteControl("NUE", "STD")]),
+    routes: this.formBuilder.array([this.createNewRouteControl("NUE", "STN")]),
     startDate: new FormControl(formatDate(this.defaultStartDate, 'yyyy-MM-dd', 'en')),
     endDate: new FormControl(formatDate(this.defaultEndDate, 'yyyy-MM-dd', 'en')),
   });

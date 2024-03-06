@@ -20,10 +20,10 @@ export class FlightCheckerComponent implements OnDestroy {
     routes: [
       {
         origin: "NUE",
-        destination: "STD",
+        destination: "STN",
       },
       {
-        origin: "STD",
+        origin: "STN",
         destination: "SDR",
       },
     ],
@@ -35,7 +35,7 @@ export class FlightCheckerComponent implements OnDestroy {
       id: 1,
       createdAt: new Date(),
       origin: "NUE",
-      destination: "STD",
+      destination: "STN",
       departureDate: new Date(2024, 2, 1, 7, 30),
       landingDate: new Date(2024, 2, 1, 10, 30),
       price: 25.0,
@@ -45,21 +45,21 @@ export class FlightCheckerComponent implements OnDestroy {
       id: 1,
       createdAt: new Date(),
       origin: "NUE",
-      destination: "STD",
+      destination: "STN",
       departureDate: new Date(2024, 2, 1, 13, 30),
       landingDate: new Date(2024, 2, 1, 14, 30),
       price: 15.0,
-      duration: 4,
+      duration: 2,
     },
     {
       id: 2,
       createdAt: new Date(),
-      origin: "STD",
+      origin: "STN",
       destination: "SDR",
       departureDate: new Date(2024, 2, 1, 15, 30),
       landingDate: new Date(2024, 2, 1, 17, 30),
       price: 50.0,
-      duration: 1,
+      duration: 2,
     },
   ];
 

@@ -55,31 +55,31 @@ public class FlightResource {
         List<FlightDTO> flights = new ArrayList<>();
 
         FlightDTO flight = new FlightDTO();
-        flight.setOrigin("STD");
-        flight.setDestination("NUE");
+        flight.setOrigin("NUE");
+        flight.setDestination("STN");
         flight.setPrice(19.99f);
-        flight.setDepartureDate(LocalDateTime.of(2024, 3, 5, 12, 47, 0));
-        flight.setLandingDate(LocalDateTime.of(2024, 3, 5, 15, 47, 0));
+        flight.setDepartureDate(LocalDateTime.of(2024, 3, 15, 12, 47, 0));
+        flight.setLandingDate(LocalDateTime.of(2024, 3, 15, 15, 47, 0));
         flight.setId(1l);
         flight.setCreatedAt(LocalDateTime.now());
         flights.add(flight);
 
         FlightDTO flight2 = new FlightDTO();
-        flight2.setOrigin("STD");
-        flight2.setDestination("NUE");
+        flight2.setOrigin("NUE");
+        flight2.setDestination("STN");
         flight2.setPrice(20.99f);
-        flight2.setDepartureDate(LocalDateTime.of(2024, 3, 8, 23, 47, 0));
-        flight2.setLandingDate(LocalDateTime.of(2024, 3, 9, 2, 47, 0));
+        flight2.setDepartureDate(LocalDateTime.of(2024, 3, 16, 23, 47, 0));
+        flight2.setLandingDate(LocalDateTime.of(2024, 3, 17, 2, 47, 0));
         flight2.setId(1l);
         flight2.setCreatedAt(LocalDateTime.now());
         flights.add(flight2);
 
         FlightDTO flight3 = new FlightDTO();
-        flight3.setOrigin("NUE");
-        flight3.setDestination("MUC");
+        flight3.setOrigin("STN");
+        flight3.setDestination("SDR");
         flight3.setPrice(20.99f);
-        flight3.setDepartureDate(LocalDateTime.of(2024, 3, 8, 23, 47, 0));
-        flight3.setLandingDate(LocalDateTime.of(2024, 3, 9, 2, 47, 0));
+        flight3.setDepartureDate(LocalDateTime.of(2024, 3, 15, 23, 47, 0));
+        flight3.setLandingDate(LocalDateTime.of(2024, 3, 15, 2, 47, 0));
         flight3.setId(1l);
         flight3.setCreatedAt(LocalDateTime.now());
         flights.add(flight3);

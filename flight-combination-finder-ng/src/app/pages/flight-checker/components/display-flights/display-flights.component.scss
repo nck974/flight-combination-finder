@@ -1,41 +1,49 @@
+.routes-container,
+.all-flights-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.flight-container,
+.routes-header,
+.hour-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.routes-container{
+    gap: 0;
+}
+
+.header-route{
+    width: 10rem;
+}
+
 div {
     border: 1px solid black;
 }
 
-.table {
-    display: grid;
-    grid-template-rows: 2.5rem;
-    white-space: nowrap;
-    grid-auto-rows: 2.5rem;
-    width: min-content;
-}
-
-// Create different column sizes depending on the nr of combinations
-@for $i from 0 through 10 {
-    .table-#{$i}-columns {
-        grid-template-columns: min-content min-content repeat($i, 10rem);
-    }
-}
-
-
-.day-cell {
-    grid-row: span 24;
+.hour{
+    width: 2.5rem;
 }
 
 .event-container {
     position: relative;
+    width: 10rem;
 }
 
 .event {
     position: absolute;
     display: flex;
-    width: 10rem;
     white-space: break-spaces;
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: center;
     justify-content: center;
     border-radius: 10px;
+    width: 100%;
 }
 
 // Set height of the duration

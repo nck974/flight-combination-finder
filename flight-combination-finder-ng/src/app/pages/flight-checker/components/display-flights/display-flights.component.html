@@ -1,43 +1,77 @@
 @if(query && flightsByDateAndHour && dayWithFlight){
-<div class="table table-{{nrColumns}}-columns" id="flightsTable">
-  <!-- Header -->
-  <div>Day</div>
-  <div>Hour</div>
-  <!-- Header Routes -->
-  @for(route of query.routes; track route){
-  <div>{{route.origin}} - {{route.destination}}</div>
-  }
+
+<div class="all-flights-container">
+  <!-- Loop through all days -->
   @for (date of dates; track date){
-  <!-- Only show days with flights -->
+
+  <!-- Only show days with flight -->
   @if(dayWithFlight[date.toDateString()]){
-  <!-- Date -->
-  <div class="day-cell">
-    {{date | dateFormat}}
-  </div>
+  <div class="flight-container">
 
-  <!-- Hour -->
-  @for( hour of hours; track hour; let hourIndex=$index){
-  <div class="hour">{{hour}}:00</div>
-  <!-- Airports per hour -->
-  @for(route of query.routes; track route){
-  <div class="event-container">
-    @if(flightsByDateAndHour[date.toDateString()+hour]){
-    <!-- Flights in hour and airport -->
-    @for( flight of flightsByDateAndHour[date.toDateString()+hour][route.origin
-    + '-' + route.destination]; track
-    flight){
-    <div
-      class="event color-{{hourIndex}}-{{$index}} duration-{{flight.duration}}">
-      {{flight.price}}€ {{flight.departureDate | timeFormat}} ->
-      {{flight.landingDate | timeFormat}}
+    <!-- Date -->
+    <div class="day-container">
+      {{date | dateFormat}}
     </div>
-    }
-    }
+
+    <!-- Collection of flights for the day -->
+    <div class="routes-container">
+
+      <!-- Header -->
+      <div class="routes-header">
+        <div class="hour">
+          Hour
+        </div>
+        @for(route of query.routes; track route){
+        <div class="header-route">
+          {{route.origin}} - {{route.destination}}
+        </div>
+        }
+        <div>
+          Summary
+        </div>
+      </div>
+
+      <!-- Table with flights -->
+      @for( 
+        hour of getHoursRange(dayMinHour[date.toDateString()], dayMaxHour[date.toDateString()]); 
+        track      hour; 
+        let hourIndex=$index){
+      <div class="hour-container">
+
+        <!-- Hour -->
+        <div class="hour">
+          {{hour}}:00
+        </div>
+
+        <!-- Flight per airport -->
+        @for(route of query.routes; track route){
+        <div class="event-container">
+          @if(flightsByDateAndHour[date.toDateString()+hour]){
+          <!-- Flights in hour and airport -->
+          @for( flight of
+          flightsByDateAndHour[date.toDateString()+hour][route.origin
+          + '-' + route.destination]; track
+          flight){
+          <div
+            class="event color-{{hourIndex}}-{{$index}} duration-{{flight.duration}}">
+            {{flight.price}}€ {{flight.departureDate | timeFormat}} ->
+            {{flight.landingDate | timeFormat}}
+          </div>
+          }
+          }
+        </div>
+        }
+
+        <!-- Summary -->
+
+      </div>
+      }
+
+    </div>
+
   </div>
   }
   }
-  }
-  }
-
 </div>
 }
+

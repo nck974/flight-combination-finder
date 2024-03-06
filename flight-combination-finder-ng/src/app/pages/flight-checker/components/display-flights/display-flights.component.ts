@@ -19,6 +19,8 @@ export class DisplayFlightsComponent implements OnInit {
   hours = Array.from({ length: 24 }, (_, index) => `${index}`);
   flightsByDateAndHour: { [date: string]: { [route: string]: Flight[] } } = {};
   dayWithFlight: { [date: string]: boolean } = {};
+  dayMinHour: { [date: string]: number } = {};
+  dayMaxHour: { [date: string]: number } = {};
 
   ngOnInit(): void {
     if (this.query) {
@@ -38,7 +40,6 @@ export class DisplayFlightsComponent implements OnInit {
     return 0
   }
 
-
   groupFlightsByDateAnHour(flights: Flight[]): void {
     // Reset fields
     this.flightsByDateAndHour = {};
@@ -49,6 +50,7 @@ export class DisplayFlightsComponent implements OnInit {
 
       // Set keys
       const dateTimeKey = `${flight.departureDate.toDateString()}${flight.departureDate.getHours()}`;
+      const dateKey = `${flight.departureDate.toDateString()}`;
       const route = `${flight.origin}-${flight.destination}`;
 
       // Initialize data
@@ -59,13 +61,28 @@ export class DisplayFlightsComponent implements OnInit {
         this.flightsByDateAndHour[dateTimeKey][route] = [];
       }
 
+      let departureHour = flight.departureDate.getHours();
+      if (!this.dayMinHour[dateKey] || this.dayMinHour[dateTimeKey] > departureHour) {
+        this.dayMinHour[dateKey] = departureHour
+      }
+
+      let landingHour = flight.landingDate.getHours() + 1; // Add one to give room for half hours
+      if (!this.dayMaxHour[dateKey] || this.dayMaxHour[dateKey] < landingHour) {
+        this.dayMaxHour[dateKey] = landingHour;
+      }
+
       // Save data
       this.flightsByDateAndHour[dateTimeKey][route].push(flight);
       this.dayWithFlight[flight.departureDate.toDateString()] = true;
       // Save also the landing date for multi-day flights
       this.dayWithFlight[flight.landingDate.toDateString()] = true;
     }
+    console.log("this.flightsByDateAndHour");
     console.log(this.flightsByDateAndHour)
+    console.log("this.dayMinHour");
+    console.log(this.dayMinHour)
+    console.log("this.dayMaxHour");
+    console.log(this.dayMaxHour)
   }
 
   setDatesInRange(query: FlightQuery): void {
@@ -76,6 +93,10 @@ export class DisplayFlightsComponent implements OnInit {
       this.dates.push(new Date(currentDate));
       currentDate.setDate(currentDate.getDate() + 1);
     }
+  }
+
+  getHoursRange(start: number, end: number): number[] {
+    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
   }
 
 }
