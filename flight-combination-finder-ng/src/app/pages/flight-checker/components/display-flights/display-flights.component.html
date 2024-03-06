@@ -2,7 +2,7 @@
 
 <div class="all-flights-container">
   <!-- Loop through all days -->
-  @for (date of dates; track date){
+  @for (date of dates; track date; let dateIndex = $index){
 
   <!-- Only show days with flight -->
   @if(dayWithFlight[date.toDateString()]){
@@ -17,6 +17,7 @@
     <div class="routes-container">
 
       <!-- Header -->
+      @if(dateIndex == 0){
       <div class="routes-header">
         <div class="hour">
           Hour
@@ -26,16 +27,18 @@
           {{route.origin}} - {{route.destination}}
         </div>
         }
-        <div>
+        <!-- <div>
           Summary
-        </div>
+        </div> -->
       </div>
+      }
 
       <!-- Table with flights -->
-      @for( 
-        hour of getHoursRange(dayMinHour[date.toDateString()], dayMaxHour[date.toDateString()]); 
-        track      hour; 
-        let hourIndex=$index){
+      @for(
+      hour of getHoursRange(dayMinHour[date.toDateString()],
+      dayMaxHour[date.toDateString()]);
+      track hour;
+      let hourIndex=$index){
       <div class="hour-container">
 
         <!-- Hour -->
@@ -56,6 +59,7 @@
             class="event color-{{hourIndex}}-{{$index}} duration-{{flight.duration}}">
             {{flight.price}}€ {{flight.departureDate | timeFormat}} ->
             {{flight.landingDate | timeFormat}}
+            <br>
           </div>
           }
           }
@@ -63,7 +67,8 @@
         }
 
         <!-- Summary -->
-
+        <!-- <div></div> -->
+        <!-- TODO -->
       </div>
       }
 
@@ -74,4 +79,3 @@
   }
 </div>
 }
-

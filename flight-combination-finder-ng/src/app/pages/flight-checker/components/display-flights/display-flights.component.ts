@@ -26,10 +26,10 @@ export class DisplayFlightsComponent implements OnInit {
     if (this.query) {
       console.log("On init:")
       console.log(this.query);
-      this.setDatesInRange(this.query);
     }
     if (this.flights) {
       this.groupFlightsByDateAnHour(this.flights);
+      this.sortAndFilterDates();
     }
   }
 
@@ -47,6 +47,10 @@ export class DisplayFlightsComponent implements OnInit {
 
     // Loop through all flights and save the flights
     for (const flight of flights) {
+
+      // Save date
+      this.dates.push(flight.departureDate);
+      this.dates.push(flight.landingDate);
 
       // Set keys
       const dateTimeKey = `${flight.departureDate.toDateString()}${flight.departureDate.getHours()}`;
@@ -67,8 +71,23 @@ export class DisplayFlightsComponent implements OnInit {
       }
 
       let landingHour = flight.landingDate.getHours() + 1; // Add one to give room for half hours
-      if (!this.dayMaxHour[dateKey] || this.dayMaxHour[dateKey] < landingHour) {
+
+      // Handle scenario of multi-day flights
+      if (flight.landingDate.getDay() != flight.departureDate.getDay()) {
+        console.log(`Setting with ${flight.landingDate.toDateString()} hour ${landingHour}`);
+
+        this.dayMinHour[flight.landingDate.toDateString()] = 0;
+        if (!this.dayMaxHour[flight.landingDate.toDateString()] || this.dayMaxHour[flight.landingDate.toDateString()] < landingHour) {
+          this.dayMaxHour[flight.landingDate.toDateString()] = landingHour;
+        }
+        this.dayMaxHour[dateKey] = 23;
+      }
+      else if (!this.dayMaxHour[dateKey] || this.dayMaxHour[dateKey] < landingHour) {
+        console.log(`Setting with ${dateKey} max-hour ${landingHour}`);
         this.dayMaxHour[dateKey] = landingHour;
+      } else {
+        console.log(`Not setting in ${dateKey} (${route}) max-hour ${landingHour}`);
+
       }
 
       // Save data
@@ -85,15 +104,21 @@ export class DisplayFlightsComponent implements OnInit {
     console.log(this.dayMaxHour)
   }
 
-  setDatesInRange(query: FlightQuery): void {
-    this.dates = [];
-    let currentDate = query.startDate;
-    const endDate = query.endDate;
-    while (currentDate.getTime() <= endDate.getTime()) {
-      this.dates.push(new Date(currentDate));
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
+
+  sortAndFilterDates() {
+    // Remove the duplicates
+    this.dates = this.dates.filter((date, index, self) =>
+      index === self.findIndex((d) => (
+        d.getDate() === date.getDate() &&
+        d.getMonth() === date.getMonth() &&
+        d.getFullYear() === date.getFullYear()
+      ))
+    );
+
+    // Sort the uniqueDates array
+    this.dates.sort((a, b) => a.getTime() - b.getTime());
   }
+
 
   getHoursRange(start: number, end: number): number[] {
     return Array.from({ length: end - start + 1 }, (_, index) => start + index);

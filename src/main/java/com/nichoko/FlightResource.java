@@ -79,7 +79,7 @@ public class FlightResource {
         flight3.setDestination("SDR");
         flight3.setPrice(20.99f);
         flight3.setDepartureDate(LocalDateTime.of(2024, 3, 15, 23, 47, 0));
-        flight3.setLandingDate(LocalDateTime.of(2024, 3, 15, 2, 47, 0));
+        flight3.setLandingDate(LocalDateTime.of(2024, 3, 16, 2, 47, 0));
         flight3.setId(1l);
         flight3.setCreatedAt(LocalDateTime.now());
         flights.add(flight3);

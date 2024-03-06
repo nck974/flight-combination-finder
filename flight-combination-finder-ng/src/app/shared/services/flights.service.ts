@@ -18,7 +18,23 @@ export class FlightsService {
     flights.map(flight => {
       flight.departureDate = new Date(flight.departureDate);
       flight.landingDate = new Date(flight.landingDate);
-      flight.duration = Math.ceil((flight.landingDate.getTime() - flight.departureDate.getTime()) / (1000 * 60 * 60));
+      let landingHour = flight.landingDate.getHours();
+      let departureHour = flight.departureDate.getHours();
+
+      // Normal time difference
+      if (departureHour <= landingHour) {
+        flight.duration = landingHour - departureHour;
+      } 
+      // Multi day flights
+      else {
+        flight.duration = landingHour + 24 - departureHour;
+      }
+
+      // Round up if not sharp to the minute
+      if (flight.departureDate.getMinutes() > 0) {
+        flight.duration = flight.duration + 1;
+      }
+
       return flight;
     })
     return flights;

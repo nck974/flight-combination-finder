@@ -2,7 +2,6 @@
 .all-flights-container {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
 }
 
 .flight-container,
@@ -13,16 +12,16 @@
     gap: 1rem;
 }
 
+.hour-container{
+    height: 2.5rem;
+}
+
 .routes-container{
     gap: 0;
 }
 
 .header-route{
     width: 10rem;
-}
-
-div {
-    border: 1px solid black;
 }
 
 .hour{
