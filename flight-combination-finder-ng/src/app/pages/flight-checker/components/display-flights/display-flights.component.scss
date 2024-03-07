@@ -9,7 +9,7 @@
     padding: 1rem;
     justify-content: center;
     align-items: flex-start;
-    border: solid 1px black;
+    border: solid 1px white;
 }
 
 .flight-container,
@@ -70,10 +70,10 @@
     text-align: center;
     align-items: center;
     padding: 0.25rem;
-    border: solid 1px black;
+    border: solid 1px white;
     width: 100%;
     z-index: 10;
-    transition: font-size 0.3s ease;
+    transition: font-size 1s ease;
 }
 
 .event:hover {
@@ -88,7 +88,7 @@
 @for $i from 0 through 10 {
     .duration-#{$i} {
         height: $i * 1.5rem;
-        transition: height 0.3s ease;
+        transition: height 0.5s ease;
     }
     .duration-#{$i}:hover{
         height: $i*1.5 + 1.5rem;
