@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import {MatDividerModule} from '@angular/material/divider'; 
 import { Flight } from '../../../../model/flight';
 import { FlightQuery } from '../../../../model/flight-query';
 import { DateFormatPipe } from '../../../../shared/pipes/date-format.pipe';
@@ -7,7 +8,7 @@ import { TimeFormatPipe } from '../../../../shared/pipes/time-format.pipe';
 @Component({
   selector: 'app-display-flights',
   standalone: true,
-  imports: [DateFormatPipe, TimeFormatPipe],
+  imports: [DateFormatPipe, TimeFormatPipe, MatDividerModule],
   templateUrl: './display-flights.component.html',
   styleUrl: './display-flights.component.scss'
 })

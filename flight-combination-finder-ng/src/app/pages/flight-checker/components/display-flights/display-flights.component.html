@@ -10,7 +10,9 @@
 
     <!-- Date -->
     <div class="day-container header">
-      {{date | dateFormat}}
+      <div [class.routes-header]="dateIndex==0">
+        {{date | dateFormat}}
+      </div>
     </div>
 
     <!-- Collection of flights for the day -->
@@ -31,6 +33,7 @@
           Summary
         </div> -->
       </div>
+      <mat-divider class="divider"></mat-divider>
       }
 
       <!-- Table with flights -->
