@@ -1,6 +1,37 @@
 <div class="form-wrapper">
   <form #myForm [formGroup]="formQuery" (ngSubmit)="onSubmit()">
 
+    <div class="control">
+
+      <!-- Dates -->
+      <div>
+        <mat-form-field>
+          <mat-label>Enter the search range</mat-label>
+          <mat-date-range-input [formGroup]="formQuery" [rangePicker]="picker">
+            <input matStartDate formControlName="startDate"
+              placeholder="Start date">
+            <input matEndDate formControlName="endDate" placeholder="End date">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix
+            [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+
+          @if (formQuery.controls.startDate.hasError('matStartDateInvalid')) {
+          <mat-error>Invalid start date</mat-error>
+          }
+          @if (formQuery.controls.endDate.hasError('matEndDateInvalid')) {
+          <mat-error>Invalid end date</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Submit -->
+      <div class="submit-wrapper">
+        <button mat-raised-button color="primary" type="submit"
+          [disabled]="!formQuery.valid">Search</button>
+      </div>
+    </div>
+
     <!-- Routes -->
     <div class="routes" formArrayName="routes">
       @for(route of routesControl.controls; track route; let i = $index){
@@ -41,38 +72,6 @@
         }
       </div>
       }
-    </div>
-
-    <div class="control">
-
-      <!-- Dates -->
-      <div>
-        <mat-form-field>
-          <mat-label>Enter the search range</mat-label>
-          <mat-date-range-input [formGroup]="formQuery" [rangePicker]="picker">
-            <input matStartDate formControlName="startDate"
-              placeholder="Start date">
-            <input matEndDate formControlName="endDate" placeholder="End date">
-          </mat-date-range-input>
-          <mat-datepicker-toggle matIconSuffix
-            [for]="picker"></mat-datepicker-toggle>
-          <mat-date-range-picker #picker></mat-date-range-picker>
-
-          @if (formQuery.controls.startDate.hasError('matStartDateInvalid')) {
-          <mat-error>Invalid start date</mat-error>
-          }
-          @if (formQuery.controls.endDate.hasError('matEndDateInvalid')) {
-          <mat-error>Invalid end date</mat-error>
-          }
-        </mat-form-field>
-      </div>
-
-      <!-- Submit -->
-      <div>
-        <button mat-raised-button color="primary" type="submit"
-          [disabled]="!formQuery.valid">Search</button>
-      </div>
-
     </div>
 
   </form>

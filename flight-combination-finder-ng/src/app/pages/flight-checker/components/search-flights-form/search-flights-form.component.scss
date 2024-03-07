@@ -1,25 +1,33 @@
-.form-wrapper{
+.form-wrapper {
     padding: 1rem;
 }
 
-.form-wrapper form{
-    display: flex;
-    flex-direction: column;
-}
-
-.routes{
-    display: flex;
-    flex-direction: column;
-}
-
-.route,
-.control{
+.form-wrapper form {
     display: flex;
     flex-direction: row;
     gap: 1rem;
-    align-items: center;
 }
 
-.form-wrapper form label{
+.routes,
+.control {
+    display: flex;
+    flex-direction: column;
+}
+
+.route {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: left;
+    align-items: flex-start;
+}
+
+.form-wrapper form label {
     margin-right: 0.25rem;
+}
+
+.submit-wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: center;
 }
