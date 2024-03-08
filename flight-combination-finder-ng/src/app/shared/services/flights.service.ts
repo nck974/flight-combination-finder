@@ -3,13 +3,15 @@ import { Injectable } from '@angular/core';
 import { Observable, map, tap } from 'rxjs';
 import { Flight } from '../../model/flight';
 import { FlightQuery } from '../../model/flight-query';
+import { environment } from '../../../environment/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FlightsService {
 
-  private url = "http://localhost:8080/flights/test";
+  private backendUrl = environment.backendUrl;
+  private url = `${this.backendUrl}/flights/test`;
 
   constructor(private httpClient: HttpClient) { }
 
@@ -24,7 +26,7 @@ export class FlightsService {
       // Normal time difference
       if (departureHour <= landingHour) {
         flight.duration = landingHour - departureHour;
-      } 
+      }
       // Multi day flights
       else {
         flight.duration = landingHour + 24 - departureHour;

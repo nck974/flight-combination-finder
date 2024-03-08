@@ -3,12 +3,24 @@ version: "3.8"
 services:
   flight-combinanation-finder:
     container_name: flight-combinanation-finder
-    image: quarkus/flight-combination-finder-jvm
+    image: nck974/flight-combination-finder:1.0.1
     restart: unless-stopped
     depends_on:
       - flightsdatabase
     ports:
       - 8080:8080
+
+  flight-combinanation-finder-ng:
+    container_name: flight-combinanation-finder-ng
+    image: nck974/flight-combination-finder-ng:1.0.1
+    restart: unless-stopped
+    depends_on:
+      - flightsdatabase
+      - flight-combinanation-finder
+    environment:
+      - BACKEND_URL=http://${SERVER_IP}:8080/backend
+    ports:
+      - 8081:80
 
   flightsdatabase:
     container_name: flightsdatabase
