@@ -3,6 +3,6 @@
 
     // Environment variables
     window["env"]["production"] = "${PRODUCTION}";
-    window["env"]["backendURL"] = "${BACKEND_URL}s";
+    window["env"]["backendUrl"] = "${BACKEND_URL}";
     window["env"]["debug"] = "${DEBUG}";
 })(this);

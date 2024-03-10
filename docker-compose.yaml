@@ -1,8 +1,23 @@
 version: "3.8"
 
 services:
-  flight-combinanation-finder:
-    container_name: flight-combinanation-finder
+  ngnix:
+    container_name: nginx
+    image: nck974/flight-combination-finder-ngnix:1.0.3
+    restart: unless-stopped
+    depends_on:
+      - flightcombinationfinder
+      - flightcombinationfinderng
+    ports:
+      - 443:443
+      - 80:80
+    environment:
+      - NGINX_HOST=${SERVER_IP}
+    volumes:
+      - ./ssl/:/etc/nginx/ssl/:ro
+
+  flightcombinationfinder:
+    container_name: flightcombinationfinder
     image: nck974/flight-combination-finder:1.0.1
     restart: unless-stopped
     depends_on:
@@ -10,15 +25,15 @@ services:
     ports:
       - 8080:8080
 
-  flight-combinanation-finder-ng:
-    container_name: flight-combinanation-finder-ng
-    image: nck974/flight-combination-finder-ng:1.0.1
+  flightcombinationfinderng:
+    container_name: flightcombinationfinderng
+    image: nck974/flight-combination-finder-ng:1.0.2
     restart: unless-stopped
     depends_on:
       - flightsdatabase
-      - flight-combinanation-finder
+      - flightcombinationfinder
     environment:
-      - BACKEND_URL=http://${SERVER_IP}:8080/backend
+      - BACKEND_URL=https://${SERVER_IP}/backend
     ports:
       - 8081:80
 

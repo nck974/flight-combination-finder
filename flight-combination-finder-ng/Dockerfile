@@ -1,3 +1,5 @@
+# docker build -f Dockerfile -t nck974/flight-combination-finder-ng:1.0.3 . --no-cache
+# docker push nck974/flight-combination-finder-ng:1.0.3
 #################
 # Build the app #
 #################
