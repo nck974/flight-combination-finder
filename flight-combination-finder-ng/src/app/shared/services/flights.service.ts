@@ -11,7 +11,7 @@ import { environment } from '../../../environment/environment';
 export class FlightsService {
 
   private backendUrl = environment.backendUrl;
-  private url = `${this.backendUrl}/flights/test`;
+  private url = `${this.backendUrl}/flights`;
 
   constructor(private httpClient: HttpClient) { }
 
