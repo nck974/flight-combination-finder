@@ -9,8 +9,10 @@ import org.jboss.resteasy.reactive.RestResponse;
 
 import com.nichoko.domain.dto.FlightDTO;
 import com.nichoko.domain.dto.FlightQueryDTO;
+import com.nichoko.domain.dto.ItineraryResponseDTO;
 import com.nichoko.service.interfaces.AirlineService;
 import com.nichoko.service.interfaces.FlightService;
+import com.nichoko.service.interfaces.FlightsDetailsService;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -28,15 +30,18 @@ public class FlightResource {
 
     private AirlineService airlineService;
     private FlightService flightService;
+    private FlightsDetailsService flightsDetailsService;
 
     @Inject
-    FlightResource(AirlineService airlineService, FlightService flightService) {
+    FlightResource(AirlineService airlineService, FlightService flightService,
+            FlightsDetailsService flightsDetailsService) {
         this.airlineService = airlineService;
         this.flightService = flightService;
+        this.flightsDetailsService = flightsDetailsService;
     }
 
     @POST
-    public RestResponse<List<FlightDTO>> getAllFlights(FlightQueryDTO query) {
+    public RestResponse<ItineraryResponseDTO> getAllFlights(FlightQueryDTO query) {
         logger.info("Checking flights:\n" + query.getRoutesCombinations() + "...");
         List<FlightDTO> flights = airlineService.getCompanyFlights(query);
         logger.info("Flights found: " + flights.size());
@@ -45,13 +50,16 @@ public class FlightResource {
             logger.info("Saving to the database:\n" + query.getRoutesCombinations() + "...");
             flights = flightService.saveFlights(flights);
         }
+        ItineraryResponseDTO itineraryResponseDTO = new ItineraryResponseDTO();
+        itineraryResponseDTO.setFlights(flights);
+        itineraryResponseDTO.setAvailableRoutes(this.flightsDetailsService.getItineraryOptions(query, flights));
 
-        return RestResponse.ok(flights);
+        return RestResponse.ok(itineraryResponseDTO);
     }
 
     @Path("/test")
     @POST
-    public RestResponse<List<FlightDTO>> getAllFlightsTest(FlightQueryDTO query) {
+    public RestResponse<ItineraryResponseDTO> getAllFlightsTest(FlightQueryDTO query) {
         List<FlightDTO> flights = new ArrayList<>();
 
         FlightDTO flight = new FlightDTO();
@@ -84,6 +92,11 @@ public class FlightResource {
         flight3.setCreatedAt(LocalDateTime.now());
         flights.add(flight3);
 
-        return RestResponse.ok(flights);
+        ItineraryResponseDTO itineraryResponseDTO = new ItineraryResponseDTO();
+        itineraryResponseDTO.setFlights(flights);
+        itineraryResponseDTO.setAvailableRoutes(this.flightsDetailsService.getItineraryOptions(query, flights));
+
+        return RestResponse.ok(itineraryResponseDTO);
     }
+
 }

@@ -85,9 +85,9 @@ export class FlightCheckerComponent implements OnDestroy {
         finalize(() => this.isLoading = false)
       )
       .subscribe(
-        (flights) => {
+        (response) => {
           console.log("Displaying new flights...");
-          this.flights = flights;
+          this.flights = response.flights;
         }
       );
   }
