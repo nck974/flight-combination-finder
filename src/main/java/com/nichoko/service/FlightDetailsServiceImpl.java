@@ -11,6 +11,7 @@ import com.nichoko.domain.dto.FlightQueryDTO;
 import com.nichoko.domain.dto.FlightRouteDTO;
 import com.nichoko.domain.dto.FlightQueryDTO.RouteCombination;
 import com.nichoko.service.interfaces.FlightsDetailsService;
+import com.nichoko.utils.CartesianProduct;
 import com.nichoko.utils.DateUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -26,6 +27,12 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
         this.dateUtils = dateUtils;
     }
 
+    /**
+     * Structure the data in a map organized by date and route to have quick access to
+     * the flight combinations.
+     * @param flights
+     * @return
+     */
     private Map<LocalDate, Map<String, List<FlightDTO>>> getStructuredData(List<FlightDTO> flights) {
 
         Map<LocalDate, Map<String, List<FlightDTO>>> sortedFlightData = new HashMap<>();
@@ -63,26 +70,6 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
         return false;
     }
 
-    private List<List<FlightDTO>> generateFlightCombinations(List<List<FlightDTO>> lists) {
-        List<List<FlightDTO>> result = new ArrayList<>();
-        this.generateCombinationsHelper(lists, result, new ArrayList<>(), 0);
-        return result;
-    }
-
-    private void generateCombinationsHelper(List<List<FlightDTO>> lists, List<List<FlightDTO>> result,
-            List<FlightDTO> current, int index) {
-        if (index == lists.size()) {
-            result.add(new ArrayList<>(current));
-            return;
-        }
-
-        for (FlightDTO value : lists.get(index)) {
-            current.add(value);
-            generateCombinationsHelper(lists, result, current, index + 1);
-            current.remove(current.size() - 1);
-        }
-    }
-
     /**
      * Check that every flight of the list departs after the previous one has landed
      * 
@@ -110,6 +97,17 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
                 .sum();
     }
 
+    /**
+     * For each day in the range of the query check if there is a possible
+     * combination of all flights
+     * that would allow to get from the origin to the destination going through all
+     * routes without
+     * overlapping the flight times
+     * 
+     * @param query
+     * @param flights
+     * @return routes
+     */
     @Override
     public List<FlightRouteDTO> getItineraryOptions(FlightQueryDTO query, List<FlightDTO> flights) {
 
@@ -130,7 +128,7 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
             }
 
             // Generate combinations
-            List<List<FlightDTO>> combinations = generateFlightCombinations(flightLists);
+            List<List<FlightDTO>> combinations = CartesianProduct.generateListsCartesianProduct(flightLists);
 
             // Filter combinations
             List<List<FlightDTO>> validCombinations = filterValidCombinations(combinations);
