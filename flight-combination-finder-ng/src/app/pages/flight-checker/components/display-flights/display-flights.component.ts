@@ -5,11 +5,12 @@ import { FlightQuery } from '../../../../model/flight-query';
 import { DateFormatPipe } from '../../../../shared/pipes/date-format.pipe';
 import { TimeFormatPipe } from '../../../../shared/pipes/time-format.pipe';
 import { Route } from '../../../../model/route';
+import { DateWeekdayPipe } from '../../../../shared/pipes/date-weekday.pipe';
 
 @Component({
   selector: 'app-display-flights',
   standalone: true,
-  imports: [DateFormatPipe, TimeFormatPipe, MatDividerModule],
+  imports: [DateFormatPipe, TimeFormatPipe, MatDividerModule, DateWeekdayPipe],
   templateUrl: './display-flights.component.html',
   styleUrl: './display-flights.component.scss'
 })
