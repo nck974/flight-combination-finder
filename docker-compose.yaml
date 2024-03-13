@@ -18,7 +18,7 @@ services:
 
   flightcombinationfinder:
     container_name: flightcombinationfinder
-    image: nck974/flight-combination-finder:1.0.1
+    image: nck974/flight-combination-finder:1.0.3
     restart: unless-stopped
     depends_on:
       - flightsdatabase
@@ -27,7 +27,7 @@ services:
 
   flightcombinationfinderng:
     container_name: flightcombinationfinderng
-    image: nck974/flight-combination-finder-ng:1.0.4
+    image: nck974/flight-combination-finder-ng:1.0.5
     restart: unless-stopped
     depends_on:
       - flightsdatabase
