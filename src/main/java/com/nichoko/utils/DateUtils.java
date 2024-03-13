@@ -6,12 +6,13 @@ import java.util.List;
 
 import com.nichoko.exception.InvalidDateException;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
-@ApplicationScoped
 public class DateUtils {
 
-    public List<LocalDate> getDatesRange(LocalDate startDate, LocalDate endDate) {
+    DateUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static List<LocalDate> getDatesRange(LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
             throw new InvalidDateException("End date is before the start date", 1000);
         }

@@ -15,21 +15,15 @@ import com.nichoko.utils.CartesianProduct;
 import com.nichoko.utils.DateUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class FlightDetailsServiceImpl implements FlightsDetailsService {
 
-    private DateUtils dateUtils;
-
-    @Inject
-    FlightDetailsServiceImpl(DateUtils dateUtils) {
-        this.dateUtils = dateUtils;
-    }
-
     /**
-     * Structure the data in a map organized by date and route to have quick access to
+     * Structure the data in a map organized by date and route to have quick access
+     * to
      * the flight combinations.
+     * 
      * @param flights
      * @return
      */
@@ -114,7 +108,7 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
         List<FlightRouteDTO> routes = new ArrayList<>();
         Map<LocalDate, Map<String, List<FlightDTO>>> sortedFlightData = this.getStructuredData(flights);
 
-        for (LocalDate date : dateUtils.getDatesRange(query.getStartDate(), query.getEndDate())) {
+        for (LocalDate date : DateUtils.getDatesRange(query.getStartDate(), query.getEndDate())) {
             if (!sortedFlightData.containsKey(date)
                     || isRouteMissingInItinerary(sortedFlightData.get(date), query.getRoutes())) {
                 continue;
