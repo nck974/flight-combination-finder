@@ -85,7 +85,7 @@
 }
 
 // Set height of the duration
-@for $i from 0 through 10 {
+@for $i from 0 through 24 {
     .duration-#{$i} {
         height: $i * 1.5rem;
         transition: height 0.5s ease;

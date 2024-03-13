@@ -1,9 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {MatDividerModule} from '@angular/material/divider'; 
+import { MatDividerModule } from '@angular/material/divider';
 import { Flight } from '../../../../model/flight';
 import { FlightQuery } from '../../../../model/flight-query';
 import { DateFormatPipe } from '../../../../shared/pipes/date-format.pipe';
 import { TimeFormatPipe } from '../../../../shared/pipes/time-format.pipe';
+import { Route } from '../../../../model/route';
 
 @Component({
   selector: 'app-display-flights',
@@ -15,10 +16,11 @@ import { TimeFormatPipe } from '../../../../shared/pipes/time-format.pipe';
 export class DisplayFlightsComponent implements OnInit {
   @Input() query?: FlightQuery;
   @Input() flights?: Flight[];
+  @Input() routes?: Route[];
 
   dates: Date[] = [];
   hours = Array.from({ length: 24 }, (_, index) => `${index}`);
-  flightsByDateAndHour: { [date: string]: { [route: string]: Flight[] } } = {};
+  flightsByDateAndHour: { [date: string]: { [route: string]: (Flight[] | Route[]) } } = {};
   dayWithFlight: { [date: string]: boolean } = {};
   dayMinHour: { [date: string]: number } = {};
   dayMaxHour: { [date: string]: number } = {};
@@ -28,8 +30,8 @@ export class DisplayFlightsComponent implements OnInit {
       console.log("On init:")
       console.log(this.query);
     }
-    if (this.flights) {
-      this.groupFlightsByDateAnHour(this.flights);
+    if (this.flights && this.routes) {
+      this.groupFlightsByDateAnHour(this.flights, this.routes);
       this.sortAndFilterDates();
     }
   }
@@ -41,12 +43,46 @@ export class DisplayFlightsComponent implements OnInit {
     return 0
   }
 
-  groupFlightsByDateAnHour(flights: Flight[]): void {
-    // Reset fields
-    this.flightsByDateAndHour = {};
-    this.dayWithFlight = {};
+  private initializeDayData(dateTimeKey: string, route: string): void {
+    if (!this.flightsByDateAndHour[dateTimeKey]) {
+      this.flightsByDateAndHour[dateTimeKey] = {};
+    }
+    if (!this.flightsByDateAndHour[dateTimeKey][route]) {
+      this.flightsByDateAndHour[dateTimeKey][route] = [];
+    }
+  }
 
-    // Loop through all flights and save the flights
+  private setFlightTimeBoundaries(flight: Flight, route: string): void {
+    const dateKey = `${flight.departureDate.toDateString()}`;
+
+    let departureHour = flight.departureDate.getHours();
+    if ((!this.dayMinHour[dateKey] && this.dayMinHour[dateKey] !== 0) || this.dayMinHour[dateKey] > departureHour) {
+      console.log(`Overwriting ${dateKey} which was ${this.dayMinHour[dateKey]} with ${departureHour}`);
+      this.dayMinHour[dateKey] = departureHour;
+    }
+
+    let landingHour = flight.landingDate.getHours() + 1; // Add one to give room for half hours
+
+    // Handle scenario of multi-day flights
+    if (flight.landingDate.getDay() != flight.departureDate.getDay()) {
+      const landingDateKey = `${flight.landingDate.toDateString()}`;
+      console.log(`Setting with ${landingDateKey} hour ${landingHour}`);
+
+      this.dayMinHour[landingDateKey] = 0;
+      if (!this.dayMaxHour[landingDateKey] || this.dayMaxHour[landingDateKey] < landingHour) {
+        this.dayMaxHour[landingDateKey] = landingHour;
+      }
+      this.dayMaxHour[dateKey] = 23;
+    }
+    else if (!this.dayMaxHour[dateKey] || this.dayMaxHour[dateKey] < landingHour) {
+      console.log(`Setting with ${dateKey} max-hour ${landingHour}`);
+      this.dayMaxHour[dateKey] = landingHour;
+    } else {
+      console.log(`Not setting in ${dateKey} (${route}) max-hour ${landingHour}`);
+    }
+  }
+
+  private groupFlights(flights: Flight[]): void {
     for (const flight of flights) {
 
       // Save date
@@ -55,41 +91,13 @@ export class DisplayFlightsComponent implements OnInit {
 
       // Set keys
       const dateTimeKey = `${flight.departureDate.toDateString()}${flight.departureDate.getHours()}`;
-      const dateKey = `${flight.departureDate.toDateString()}`;
       const route = `${flight.origin}-${flight.destination}`;
 
-      // Initialize data
-      if (!this.flightsByDateAndHour[dateTimeKey]) {
-        this.flightsByDateAndHour[dateTimeKey] = {};
-      }
-      if (!this.flightsByDateAndHour[dateTimeKey][route]) {
-        this.flightsByDateAndHour[dateTimeKey][route] = [];
-      }
+      // Initialize data if does not exist
+      this.initializeDayData(dateTimeKey, route);
 
-      let departureHour = flight.departureDate.getHours();
-      if (!this.dayMinHour[dateKey] || this.dayMinHour[dateTimeKey] > departureHour) {
-        this.dayMinHour[dateKey] = departureHour
-      }
-
-      let landingHour = flight.landingDate.getHours() + 1; // Add one to give room for half hours
-
-      // Handle scenario of multi-day flights
-      if (flight.landingDate.getDay() != flight.departureDate.getDay()) {
-        console.log(`Setting with ${flight.landingDate.toDateString()} hour ${landingHour}`);
-
-        this.dayMinHour[flight.landingDate.toDateString()] = 0;
-        if (!this.dayMaxHour[flight.landingDate.toDateString()] || this.dayMaxHour[flight.landingDate.toDateString()] < landingHour) {
-          this.dayMaxHour[flight.landingDate.toDateString()] = landingHour;
-        }
-        this.dayMaxHour[dateKey] = 23;
-      }
-      else if (!this.dayMaxHour[dateKey] || this.dayMaxHour[dateKey] < landingHour) {
-        console.log(`Setting with ${dateKey} max-hour ${landingHour}`);
-        this.dayMaxHour[dateKey] = landingHour;
-      } else {
-        console.log(`Not setting in ${dateKey} (${route}) max-hour ${landingHour}`);
-
-      }
+      // Write the limits of min departure and max landing
+      this.setFlightTimeBoundaries(flight, route)
 
       // Save data
       this.flightsByDateAndHour[dateTimeKey][route].push(flight);
@@ -97,6 +105,33 @@ export class DisplayFlightsComponent implements OnInit {
       // Save also the landing date for multi-day flights
       this.dayWithFlight[flight.landingDate.toDateString()] = true;
     }
+  }
+
+  private groupRoutes(routes: Route[]): void {
+    for (const availableRoute of routes) {
+
+      // Set keys
+      const dateTimeKey = `${availableRoute.departureDate.toDateString()}${availableRoute.departureDate.getHours()}`;
+      const route = "summary";
+
+      // Initialize data if does not exist
+      this.initializeDayData(dateTimeKey, route);
+
+      // Save data
+      this.flightsByDateAndHour[dateTimeKey][route].push(availableRoute as Flight);
+    }
+  }
+
+  groupFlightsByDateAnHour(flights: Flight[], routes: Route[]): void {
+    // Reset fields
+    this.flightsByDateAndHour = {};
+    this.dayWithFlight = {};
+
+    // Loop through all flights and save the flights
+    this.groupFlights(flights);
+    this.groupRoutes(routes);
+
+
     console.log("this.flightsByDateAndHour");
     console.log(this.flightsByDateAndHour)
     console.log("this.dayMinHour");
@@ -106,6 +141,8 @@ export class DisplayFlightsComponent implements OnInit {
   }
 
 
+  /// All dates obtained from the landing and departure of the flights have to be sorted and
+  /// filtered to have an array of dates which only contains the relevant days to be displayed
   sortAndFilterDates() {
     // Remove the duplicates
     this.dates = this.dates.filter((date, index, self) =>
@@ -121,6 +158,8 @@ export class DisplayFlightsComponent implements OnInit {
   }
 
 
+  /// In order not to display all hours which do not have relevant content get the range of all
+  /// all hours between the given limits
   getHoursRange(start: number, end: number): number[] {
     return Array.from({ length: end - start + 1 }, (_, index) => start + index);
   }

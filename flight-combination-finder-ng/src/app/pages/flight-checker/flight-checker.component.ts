@@ -6,6 +6,7 @@ import { Flight } from '../../model/flight';
 import { FlightQuery } from '../../model/flight-query';
 import { Subscription, finalize } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Route } from '../../model/route';
 
 @Component({
   selector: 'app-flight-checker',
@@ -35,6 +36,7 @@ export class FlightCheckerComponent implements OnDestroy {
     startDate: new Date(2024, 2, 1),
     endDate: new Date(2024, 2, 3),
   };
+  routes?: Route[] = []
   flights?: Flight[] = [
     {
       id: 1,
@@ -85,9 +87,10 @@ export class FlightCheckerComponent implements OnDestroy {
         finalize(() => this.isLoading = false)
       )
       .subscribe(
-        (flights) => {
+        (response) => {
           console.log("Displaying new flights...");
-          this.flights = flights;
+          this.flights = response.flights;
+          this.routes = response.availableRoutes;
         }
       );
   }
