@@ -29,9 +29,9 @@
           {{route.origin}} - {{route.destination}}
         </div>
         }
-        <!-- <div>
-          Summary
-        </div> -->
+        <div class="header-route header">
+          Complete route
+        </div>
       </div>
       <mat-divider class="divider"></mat-divider>
       }
@@ -75,8 +75,26 @@
         }
 
         <!-- Summary -->
-        <!-- <div></div> -->
-        <!-- TODO -->
+        <div class="event-container">
+          @if(flightsByDateAndHour[date.toDateString()+hour]){
+          <!-- Summary of the day -->
+          @for( route of
+          flightsByDateAndHour[date.toDateString()+hour]["summary"]; track route){
+          <div
+            class="event color-{{hourIndex}}-{{$index}} duration-{{route.duration}}">
+            <div class="price">
+              {{route.price}}€
+            </div>
+            <div class="schedule">
+              {{route.departureDate | timeFormat}} →
+              {{route.landingDate | timeFormat}}
+            </div>
+            <br>
+          </div>
+          }
+          }
+        </div>
+
       </div>
       }
 

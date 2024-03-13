@@ -29,15 +29,19 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
     private Map<LocalDate, Map<String, List<FlightDTO>>> getStructuredData(List<FlightDTO> flights) {
 
         Map<LocalDate, Map<String, List<FlightDTO>>> sortedFlightData = new HashMap<>();
+
         for (FlightDTO flight : flights) {
             LocalDate departureDate = flight.getDepartureDate().toLocalDate();
             String route = flight.getOrigin() + "-" + flight.getDestination();
+
             sortedFlightData.computeIfAbsent(departureDate, k -> new HashMap<>());
+
             if (!sortedFlightData.get(departureDate).containsKey(route)) {
                 sortedFlightData.get(departureDate).put(route, new ArrayList<>());
             }
             sortedFlightData.get(departureDate).get(route).add(flight);
         }
+
         return sortedFlightData;
     }
 
@@ -49,10 +53,10 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
      * @param routes
      * @return
      */
-    private boolean isRouteMissingInItinerary(Map<String, List<FlightDTO>> dayRoutes, List<RouteCombination> routes) {
+    private boolean isRouteMissingInItinerary(Map<String, List<FlightDTO>> dayFlights, List<RouteCombination> routes) {
         for (RouteCombination route : routes) {
-            String routeName = route.getOrigin() + "-" + route.getDestination();
-            if (!dayRoutes.containsKey(routeName)) {
+            String routeName = route.getRouteName();
+            if (!dayFlights.containsKey(routeName) || dayFlights.get(routeName).isEmpty()) {
                 return true;
             }
         }
@@ -90,7 +94,7 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
             return true;
         }
 
-        for (int i = 1; i < combination.size() - 1; i++) {
+        for (int i = 1; i < combination.size(); i++) {
             if (combination.get(i).getDepartureDate()
                     .isBefore(combination.get(i - 1).getLandingDate())) {
                 return false;

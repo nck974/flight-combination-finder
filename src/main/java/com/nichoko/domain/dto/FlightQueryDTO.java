@@ -22,6 +22,10 @@ public class FlightQueryDTO {
     public static class RouteCombination {
         private String origin;
         private String destination;
+
+        public String getRouteName() {
+            return this.getOrigin() + "-" + this.getDestination();
+        }
     }
 
     public String getRoutesCombinations() {
