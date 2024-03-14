@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.jboss.logging.Logger;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nichoko.domain.dto.FlightDTO;
@@ -19,17 +19,20 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
+import lombok.extern.jbosslog.JBossLog;
 
 @ApplicationScoped
+@JBossLog
 public class RyanairService implements AirlineService {
 
-    private Logger logger = Logger.getLogger(RyanairService.class);
+    @ConfigProperty(name = "flights.airlines.ryanair-schedules")
+    private String flightsUrl;
 
     private List<String> buildUrls(FlightQueryDTO query) {
         List<String> urls = new ArrayList<>();
 
         for (RouteCombination route : query.getRoutes()) {
-            StringBuilder urlBuilder = new StringBuilder("https://www.ryanair.com/api/farfnd/v4/roundTripFares?");
+            StringBuilder urlBuilder = new StringBuilder(flightsUrl + "?");
             urlBuilder.append("departureAirportIataCode=").append(route.getOrigin())
                     .append("&outboundDepartureDateFrom=").append(query.getStartDate())
                     .append("&market=").append("en-gb") // Change to de?
@@ -51,7 +54,7 @@ public class RyanairService implements AirlineService {
         return urls;
     }
 
-    List<FlightDTO> toFlightDTO(Response response) {
+    private List<FlightDTO> toFlightDTO(Response response) {
         JsonNode responseContent = response.readEntity(JsonNode.class);
         JsonNode fares = responseContent.get("fares");
 
@@ -95,7 +98,7 @@ public class RyanairService implements AirlineService {
 
         List<FlightDTO> flights;
         try {
-            logger.info("Fetching url:\n" + url);
+            log.info("Fetching url:\n" + url);
             Response response = client.target(url).request().get();
 
             if (response.getStatus() == Response.Status.OK.getStatusCode()) {
