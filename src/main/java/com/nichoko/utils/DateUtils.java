@@ -1,6 +1,7 @@
 package com.nichoko.utils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,19 @@ public class DateUtils {
             currentDate = currentDate.plusDays(1);
         }
         return dates;
+    }
+
+    public static int calculateFlightDuration(LocalDateTime departureDateTime, LocalDateTime landingDateTime) {
+        int departureHour = departureDateTime.getHour();
+        int landingHour = landingDateTime.getHour();
+
+        if (landingDateTime.getMinute() != 0) {
+            landingHour += 1;
+        }
+        if (landingDateTime.getDayOfMonth() != departureDateTime.getDayOfMonth()) {
+            landingHour += 24;
+        }
+        return landingHour - departureHour;
     }
 
 }

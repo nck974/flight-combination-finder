@@ -49,6 +49,7 @@ public class FlightResource {
         if (!flights.isEmpty()) {
             logger.info("Saving to the database:\n" + query.getRoutesCombinations() + "...");
             flights = flightService.saveFlights(flights);
+            flights = this.flightsDetailsService.setFlightsDuration(flights);
         }
         ItineraryResponseDTO itineraryResponseDTO = new ItineraryResponseDTO();
         itineraryResponseDTO.setFlights(flights);
@@ -91,6 +92,8 @@ public class FlightResource {
         flight3.setId(1l);
         flight3.setCreatedAt(LocalDateTime.now());
         flights.add(flight3);
+
+        flights = this.flightsDetailsService.setFlightsDuration(flights);
 
         ItineraryResponseDTO itineraryResponseDTO = new ItineraryResponseDTO();
         itineraryResponseDTO.setFlights(flights);

@@ -1,6 +1,7 @@
 package com.nichoko.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,10 +86,29 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
         return true;
     }
 
-    public float getTotalPrice(List<FlightDTO> flights) {
+    private float getTotalPrice(List<FlightDTO> flights) {
         return (float) flights.stream()
                 .mapToDouble(FlightDTO::getPrice)
                 .sum();
+    }
+
+    /**
+     * Filter all combinations that can not be taken because one flight departs
+     * before the other
+     * one has landed
+     * 
+     * @param combinations
+     * @return
+     */
+    private List<List<FlightDTO>> filterValidCombinations(List<List<FlightDTO>> combinations) {
+        List<List<FlightDTO>> validCombinations = new ArrayList<>();
+        for (List<FlightDTO> combination : combinations) {
+            if (!this.isValidCombination(combination)) {
+                continue;
+            }
+            validCombinations.add(combination);
+        }
+        return validCombinations;
     }
 
     /**
@@ -105,10 +125,13 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
     @Override
     public List<FlightRouteDTO> getItineraryOptions(FlightQueryDTO query, List<FlightDTO> flights) {
 
-        List<FlightRouteDTO> routes = new ArrayList<>();
+        List<FlightRouteDTO> itineraryOptions = new ArrayList<>();
+
+        // Create structure to make filtering easier
         Map<LocalDate, Map<String, List<FlightDTO>>> sortedFlightData = this.getStructuredData(flights);
 
         for (LocalDate date : DateUtils.getDatesRange(query.getStartDate(), query.getEndDate())) {
+
             if (!sortedFlightData.containsKey(date)
                     || isRouteMissingInItinerary(sortedFlightData.get(date), query.getRoutes())) {
                 continue;
@@ -133,35 +156,31 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
                 route.setPrice(this.getTotalPrice(combination));
                 route.setDepartureDate(combination.get(0).getDepartureDate());
                 route.setLandingDate(combination.get(combination.size() - 1).getLandingDate());
-                routes.add(route);
+                route.setDuration(DateUtils.calculateFlightDuration(route.getDepartureDate(), route.getLandingDate()));
+                itineraryOptions.add(route);
             }
         }
 
-        return routes;
+        return itineraryOptions;
     }
 
     /**
-     * Filter all combinations that can not be taken because one flight departs
-     * before the other
-     * one has landed
+     * Fill the duration of each flight with an integer number. This method takes
+     * into account
+     * flights that have multiple hours, also it returns always one hour
      * 
-     * @param combinations
-     * @return
+     * @param query
+     * @param flights
+     * @return routes
      */
-    private List<List<FlightDTO>> filterValidCombinations(List<List<FlightDTO>> combinations) {
-        List<List<FlightDTO>> validCombinations = new ArrayList<>();
-        for (List<FlightDTO> combination : combinations) {
-            if (!this.isValidCombination(combination)) {
-                continue;
-            }
-            validCombinations.add(combination);
-        }
-        return validCombinations;
-    }
-
     @Override
     public List<FlightDTO> setFlightsDuration(List<FlightDTO> flights) {
-        return null;
+        for (FlightDTO flight : flights) {
+            LocalDateTime departureDateTime = flight.getDepartureDate();
+            LocalDateTime landingDateTime = flight.getLandingDate();
+            flight.setDuration(DateUtils.calculateFlightDuration(departureDateTime, landingDateTime));
+        }
+        return flights;
     }
 
 }

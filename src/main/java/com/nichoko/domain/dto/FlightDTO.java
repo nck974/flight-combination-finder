@@ -14,6 +14,7 @@ public class FlightDTO {
     String origin;
     String destination;
     Float price;
+    int duration;
     LocalDateTime departureDate;
     LocalDateTime landingDate;
     LocalDateTime createdAt;
