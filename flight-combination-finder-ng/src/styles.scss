@@ -13,6 +13,7 @@ body {
     --default-padding: 1rem;
     --default-border: solid 1px white;
     --color-error: red;
+    --min-width: 320px;
 }
 
 @import './styles/alignment';

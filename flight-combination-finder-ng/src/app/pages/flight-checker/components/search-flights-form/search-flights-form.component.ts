@@ -32,7 +32,7 @@ export class SearchFlightsFormComponent {
 
   @Output() onSearch = new EventEmitter<FlightQuery>();
 
-  private defaultDateRange = 30 * 24 * 60 * 60 * 1000; // 30n days
+  private defaultDateRange = 30 * 24 * 60 * 60 * 1000; // 30 days
   defaultStartDate = new Date();
   defaultEndDate = new Date(this.defaultStartDate.getTime() + this.defaultDateRange);
 
@@ -62,6 +62,7 @@ export class SearchFlightsFormComponent {
         destination: new FormControl("")
       })
     );
+    // Notify the change
     this.cdr.detectChanges();
   }
 
@@ -69,9 +70,7 @@ export class SearchFlightsFormComponent {
     this.routesControl.removeAt(index);
   }
 
-
-  onSubmit() {
-    console.log(this.formQuery);
+  private getAllRoutes(): FlightRoute[] {
     let routes: FlightRoute[] = []
     for (let routeControl of this.routesControl.controls) {
       routes.push(
@@ -81,14 +80,21 @@ export class SearchFlightsFormComponent {
         }
       )
     }
+    return routes;
+  }
+
+  onSubmit() {
+    if (!this.formQuery.valid) {
+      return;
+    }
 
     const query: FlightQuery = {
-      routes: routes,
+      routes: this.getAllRoutes(),
       startDate: new Date(this.formQuery.value.startDate!),
       endDate: new Date(this.formQuery.value.endDate!),
     };
-    console.log("Emitting query...");
-    console.log(query);
+    console.debug("Emitting query...");
+    console.debug(query);
     this.onSearch.emit(query);
   }
 }

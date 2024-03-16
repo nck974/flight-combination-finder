@@ -50,7 +50,7 @@ export class FlightCheckerComponent implements OnDestroy {
       departureDate: new Date(2024, 2, 1, 7, 30),
       landingDate: new Date(2024, 2, 1, 10, 30),
       price: 25.0,
-      duration: 3,
+      duration: 4,
     },
     {
       id: 1,

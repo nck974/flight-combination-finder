@@ -1,35 +1,52 @@
-.form-wrapper {
-    padding: 1rem;
-    margin: 1rem;
-    border: solid 1px white;
+.form-container {
+    padding: var(--default-padding);
+    margin: var(--default-margin);
+    border: var(--default-border);
+    min-width: var(--min-width);
 }
 
-.form-wrapper form {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-}
-
-.routes,
-.control {
+.form {
     display: flex;
     flex-direction: column;
 }
 
-.route {
+// Switch the form to row for large desktop
+@media (min-width: 1000px) {
+    .form {
+        flex-direction: row;
+        gap: 1rem;
+    }
+}
+
+.routes-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.route-container {
     display: flex;
     flex-direction: row;
     gap: 1rem;
-    justify-content: left;
-    align-items: flex-start;
 }
 
-.form-wrapper form label {
-    margin-right: 0.25rem;
-}
-
-.submit-wrapper {
+.route-fields,
+.route-controls{
     display: flex;
-    width: 100%;
-    justify-content: center;
+    flex: row;
+    gap: 1rem;
+}
+
+// For small devices show route fields as a column
+@media (max-width: 620px) {
+    .route-fields {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+// For really small devices show controls as a column
+@media (max-width: 375px) {
+    .route-controls {
+        flex-direction: column;
+    }
 }
