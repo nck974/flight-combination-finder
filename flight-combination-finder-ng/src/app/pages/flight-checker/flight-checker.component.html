@@ -2,9 +2,7 @@
     (onSearch)="onSearchFlights($event)"></app-search-flights-form>
 
 @if(isLoading){
-<div class="loading-wrapper">
-    <mat-spinner color="red"></mat-spinner>
-</div>
+<app-loading-spinner></app-loading-spinner>
 }@else {
 @if(error){
     <app-user-messages [error]="error"></app-user-messages>

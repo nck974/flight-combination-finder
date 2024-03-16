@@ -1,12 +1,12 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, map, tap, throwError } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
+import { environment } from '../../../environment/environment';
 import { Flight } from '../../model/flight';
 import { FlightQuery } from '../../model/flight-query';
-import { environment } from '../../../environment/environment';
 import { FlightsResponse } from '../../model/flights-response';
-import { Route } from '../../model/route';
 import { ResponseError } from '../../model/response-error';
+import { Route } from '../../model/route';
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +38,6 @@ export class FlightsService {
           flights: this.convertDates(response.flights) as Flight[],
           availableRoutes: this.convertDates(response.availableRoutes) as Route[]
         })),
-        tap((flights) => console.log(flights)),
         catchError(
           (error: HttpErrorResponse) => {
             const responseError: ResponseError = {

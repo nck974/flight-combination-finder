@@ -1,14 +1,14 @@
 import { Component, OnDestroy } from '@angular/core';
-import { FlightsService } from '../../shared/services/flights.service';
-import { SearchFlightsFormComponent } from './components/search-flights-form/search-flights-form.component';
-import { DisplayFlightsComponent } from './components/display-flights/display-flights.component';
+import { Subscription, finalize } from 'rxjs';
 import { Flight } from '../../model/flight';
 import { FlightQuery } from '../../model/flight-query';
-import { Subscription, finalize } from 'rxjs';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Route } from '../../model/route';
 import { ResponseError } from '../../model/response-error';
+import { Route } from '../../model/route';
 import { UserMessagesComponent } from '../../shared/components/user-messages/user-messages.component';
+import { FlightsService } from '../../shared/services/flights.service';
+import { DisplayFlightsComponent } from './components/display-flights/display-flights.component';
+import { SearchFlightsFormComponent } from './components/search-flights-form/search-flights-form.component';
+import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-flight-checker',
@@ -17,7 +17,7 @@ import { UserMessagesComponent } from '../../shared/components/user-messages/use
     SearchFlightsFormComponent,
     DisplayFlightsComponent,
     UserMessagesComponent,
-    MatProgressSpinnerModule,
+    LoadingSpinnerComponent,
   ],
   templateUrl: './flight-checker.component.html',
   styleUrl: './flight-checker.component.scss'
@@ -98,7 +98,6 @@ export class FlightCheckerComponent implements OnDestroy {
       .subscribe(
         {
           next: (response) => {
-            console.log("Displaying new flights...");
             this.flights = response.flights;
             this.routes = response.availableRoutes;
           },
