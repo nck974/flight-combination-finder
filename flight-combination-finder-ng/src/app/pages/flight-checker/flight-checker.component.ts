@@ -1,12 +1,14 @@
 import { Component, OnDestroy } from '@angular/core';
-import { FlightsService } from '../../shared/services/flights.service';
-import { SearchFlightsFormComponent } from './components/search-flights-form/search-flights-form.component';
-import { DisplayFlightsComponent } from './components/display-flights/display-flights.component';
+import { Subscription, finalize } from 'rxjs';
 import { Flight } from '../../model/flight';
 import { FlightQuery } from '../../model/flight-query';
-import { Subscription, finalize } from 'rxjs';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ResponseError } from '../../model/response-error';
 import { Route } from '../../model/route';
+import { UserMessagesComponent } from '../../shared/components/user-messages/user-messages.component';
+import { FlightsService } from '../../shared/services/flights.service';
+import { DisplayFlightsComponent } from './components/display-flights/display-flights.component';
+import { SearchFlightsFormComponent } from './components/search-flights-form/search-flights-form.component';
+import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-flight-checker',
@@ -14,7 +16,8 @@ import { Route } from '../../model/route';
   imports: [
     SearchFlightsFormComponent,
     DisplayFlightsComponent,
-    MatProgressSpinnerModule,
+    UserMessagesComponent,
+    LoadingSpinnerComponent,
   ],
   templateUrl: './flight-checker.component.html',
   styleUrl: './flight-checker.component.scss'
@@ -22,6 +25,7 @@ import { Route } from '../../model/route';
 export class FlightCheckerComponent implements OnDestroy {
   private flightSearchSubscription?: Subscription;
   isLoading = false;
+  error?: ResponseError;
   query?: FlightQuery = {
     routes: [
       {
@@ -46,7 +50,7 @@ export class FlightCheckerComponent implements OnDestroy {
       departureDate: new Date(2024, 2, 1, 7, 30),
       landingDate: new Date(2024, 2, 1, 10, 30),
       price: 25.0,
-      duration: 3,
+      duration: 4,
     },
     {
       id: 1,
@@ -80,18 +84,26 @@ export class FlightCheckerComponent implements OnDestroy {
     if (!query) {
       return;
     }
+
+    // Reset data
     this.isLoading = true;
     this.query = query;
+    this.error = undefined;
+
+    // Make query
     this.flightSearchSubscription = this.flightService.getFlights(query)
       .pipe(
-        finalize(() => this.isLoading = false)
+        finalize(() => this.isLoading = false),
       )
       .subscribe(
-        (response) => {
-          console.log("Displaying new flights...");
-          this.flights = response.flights;
-          this.routes = response.availableRoutes;
+        {
+          next: (response) => {
+            this.flights = response.flights;
+            this.routes = response.availableRoutes;
+          },
+          error: (error: ResponseError) => this.error = error
         }
-      );
+      )
+      ;
   }
 }

@@ -1,6 +1,7 @@
 package com.nichoko.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,21 +12,22 @@ import com.nichoko.domain.dto.FlightQueryDTO;
 import com.nichoko.domain.dto.FlightRouteDTO;
 import com.nichoko.domain.dto.FlightQueryDTO.RouteCombination;
 import com.nichoko.service.interfaces.FlightsDetailsService;
+import com.nichoko.utils.CartesianProduct;
 import com.nichoko.utils.DateUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class FlightDetailsServiceImpl implements FlightsDetailsService {
 
-    private DateUtils dateUtils;
-
-    @Inject
-    FlightDetailsServiceImpl(DateUtils dateUtils) {
-        this.dateUtils = dateUtils;
-    }
-
+    /**
+     * Structure the data in a map organized by date and route to have quick access
+     * to
+     * the flight combinations.
+     * 
+     * @param flights
+     * @return
+     */
     private Map<LocalDate, Map<String, List<FlightDTO>>> getStructuredData(List<FlightDTO> flights) {
 
         Map<LocalDate, Map<String, List<FlightDTO>>> sortedFlightData = new HashMap<>();
@@ -63,26 +65,6 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
         return false;
     }
 
-    private List<List<FlightDTO>> generateFlightCombinations(List<List<FlightDTO>> lists) {
-        List<List<FlightDTO>> result = new ArrayList<>();
-        this.generateCombinationsHelper(lists, result, new ArrayList<>(), 0);
-        return result;
-    }
-
-    private void generateCombinationsHelper(List<List<FlightDTO>> lists, List<List<FlightDTO>> result,
-            List<FlightDTO> current, int index) {
-        if (index == lists.size()) {
-            result.add(new ArrayList<>(current));
-            return;
-        }
-
-        for (FlightDTO value : lists.get(index)) {
-            current.add(value);
-            generateCombinationsHelper(lists, result, current, index + 1);
-            current.remove(current.size() - 1);
-        }
-    }
-
     /**
      * Check that every flight of the list departs after the previous one has landed
      * 
@@ -104,48 +86,10 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
         return true;
     }
 
-    public float getTotalPrice(List<FlightDTO> flights) {
+    private float getTotalPrice(List<FlightDTO> flights) {
         return (float) flights.stream()
                 .mapToDouble(FlightDTO::getPrice)
                 .sum();
-    }
-
-    @Override
-    public List<FlightRouteDTO> getItineraryOptions(FlightQueryDTO query, List<FlightDTO> flights) {
-
-        List<FlightRouteDTO> routes = new ArrayList<>();
-        Map<LocalDate, Map<String, List<FlightDTO>>> sortedFlightData = this.getStructuredData(flights);
-
-        for (LocalDate date : dateUtils.getDatesRange(query.getStartDate(), query.getEndDate())) {
-            if (!sortedFlightData.containsKey(date)
-                    || isRouteMissingInItinerary(sortedFlightData.get(date), query.getRoutes())) {
-                continue;
-            }
-
-            // Build lists with each available option of the itinerary
-            List<List<FlightDTO>> flightLists = new ArrayList<>();
-            for (RouteCombination route : query.getRoutes()) {
-                String routeName = route.getOrigin() + "-" + route.getDestination();
-                flightLists.add(sortedFlightData.get(date).get(routeName));
-            }
-
-            // Generate combinations
-            List<List<FlightDTO>> combinations = generateFlightCombinations(flightLists);
-
-            // Filter combinations
-            List<List<FlightDTO>> validCombinations = filterValidCombinations(combinations);
-
-            // Build final object with the valid routes
-            for (List<FlightDTO> combination : validCombinations) {
-                FlightRouteDTO route = new FlightRouteDTO();
-                route.setPrice(this.getTotalPrice(combination));
-                route.setDepartureDate(combination.get(0).getDepartureDate());
-                route.setLandingDate(combination.get(combination.size() - 1).getLandingDate());
-                routes.add(route);
-            }
-        }
-
-        return routes;
     }
 
     /**
@@ -167,9 +111,76 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
         return validCombinations;
     }
 
+    /**
+     * For each day in the range of the query check if there is a possible
+     * combination of all flights
+     * that would allow to get from the origin to the destination going through all
+     * routes without
+     * overlapping the flight times
+     * 
+     * @param query
+     * @param flights
+     * @return routes
+     */
+    @Override
+    public List<FlightRouteDTO> getItineraryOptions(FlightQueryDTO query, List<FlightDTO> flights) {
+
+        List<FlightRouteDTO> itineraryOptions = new ArrayList<>();
+
+        // Create structure to make filtering easier
+        Map<LocalDate, Map<String, List<FlightDTO>>> sortedFlightData = this.getStructuredData(flights);
+
+        for (LocalDate date : DateUtils.getDatesRange(query.getStartDate(), query.getEndDate())) {
+
+            if (!sortedFlightData.containsKey(date)
+                    || isRouteMissingInItinerary(sortedFlightData.get(date), query.getRoutes())) {
+                continue;
+            }
+
+            // Build lists with each available option of the itinerary
+            List<List<FlightDTO>> flightLists = new ArrayList<>();
+            for (RouteCombination route : query.getRoutes()) {
+                String routeName = route.getOrigin() + "-" + route.getDestination();
+                flightLists.add(sortedFlightData.get(date).get(routeName));
+            }
+
+            // Generate combinations
+            List<List<FlightDTO>> combinations = CartesianProduct.generateListsCartesianProduct(flightLists);
+
+            // Filter combinations
+            List<List<FlightDTO>> validCombinations = filterValidCombinations(combinations);
+
+            // Build final object with the valid routes
+            for (List<FlightDTO> combination : validCombinations) {
+                FlightRouteDTO route = new FlightRouteDTO();
+                route.setPrice(this.getTotalPrice(combination));
+                route.setDepartureDate(combination.get(0).getDepartureDate());
+                route.setLandingDate(combination.get(combination.size() - 1).getLandingDate());
+                route.setDuration(DateUtils.calculateFlightDuration(route.getDepartureDate(), route.getLandingDate()));
+                itineraryOptions.add(route);
+            }
+        }
+
+        return itineraryOptions;
+    }
+
+    /**
+     * Fill the duration of each flight with an integer number. This method takes
+     * into account
+     * flights that have multiple hours, also it returns always one hour
+     * 
+     * @param query
+     * @param flights
+     * @return routes
+     */
     @Override
     public List<FlightDTO> setFlightsDuration(List<FlightDTO> flights) {
-        return null;
+        for (FlightDTO flight : flights) {
+            LocalDateTime departureDateTime = flight.getDepartureDate();
+            LocalDateTime landingDateTime = flight.getLandingDate();
+            flight.setDuration(DateUtils.calculateFlightDuration(departureDateTime, landingDateTime));
+        }
+        return flights;
     }
 
 }

@@ -1,108 +1,62 @@
-.routes-container,
+// Top container
 .all-flights-container {
     display: flex;
     flex-direction: column;
 }
 
-.all-flights-container {
-    margin: 1rem;
-    padding: 1rem;
-    justify-content: center;
-    align-items: flex-start;
-    border: solid 1px white;
-}
-
-.flight-container,
-.routes-header,
-.hour-container {
+// Each day container
+.day-container {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: var(--default-gap);
 }
 
-.hour-container {
-    height: 1.5rem;
+// Table of hours and flights without the date
+.flights-table-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
 }
 
+// Table header only displayed once
+.flights-table-header {
+    display: flex;
+    flex-direction: row;
+    gap: var(--default-gap);
+}
+
+// Header of row and columns
 .header {
     font-weight: bold;
     text-align: center;
 }
 
-.routes-header {
+.header-padding {
     padding: 0.5rem 0;
 }
 
-.day-container {
-    width: 5rem;
-}
-
-.routes-container {
-    gap: 0;
-}
-
-.header-route {
-    width: 10rem;
-}
-
-.divider {
+.header-divider {
     margin-bottom: 0.5rem;
 }
 
-.hour {
-    width: 2.5rem;
-    display: flex;
-    justify-content: center;
+// Column sizes
+.hour-column {
+    min-width: 2.5rem;
 }
 
+.route-column {
+    width: max(6.5rem, 20vw);
+}
+
+// Rows where the flights start to be displayed
+.hour-row {
+    display: flex;
+    flex-direction: row;
+    gap: var(--default-gap);
+    height: 1.5rem;
+}
+
+// Allow spreading across rows the event component
 .event-container {
     position: relative;
-    width: 10rem;
-}
-
-.event {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    white-space: break-spaces;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-align: center;
-    align-items: center;
-    padding: 0.25rem;
-    border: solid 1px white;
-    width: 100%;
-    z-index: 10;
-    transition: font-size 1s ease;
-}
-
-.event:hover {
-    font-size: large;
-}
-
-.price {
-    font-weight: bolder;
-}
-
-// Set height of the duration
-@for $i from 0 through 24 {
-    .duration-#{$i} {
-        height: $i * 1.5rem;
-        transition: height 0.5s ease;
-    }
-    .duration-#{$i}:hover{
-        height: $i*1.5 + 1.5rem;
-    }
-}
-
-// Set random colors for each flight
-@for $i from 0 through 24 {
-    @for $j from 0 through 5 {
-        .color-#{$i}-#{$j} {
-            background-color: rgba(random(255), // Randomize red component
-                    random(255), // Randomize green component
-                    random(255), // Randomize blue component
-                    0.5);
-        }
-    }
 }

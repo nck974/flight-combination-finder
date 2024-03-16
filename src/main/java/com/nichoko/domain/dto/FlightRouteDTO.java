@@ -14,4 +14,5 @@ public class FlightRouteDTO {
     Float price;
     LocalDateTime departureDate;
     LocalDateTime landingDate;
+    int duration;
 }

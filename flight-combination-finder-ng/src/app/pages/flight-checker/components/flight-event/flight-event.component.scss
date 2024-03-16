@@ -1,0 +1,35 @@
+.event {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    white-space: break-spaces;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    align-items: center;
+    padding: 0.25rem;
+    border: solid 1px white;
+    width: 100%;
+    z-index: 10;
+    transition: font-size 1s ease;
+}
+
+.event:hover {
+    font-size: large;
+}
+
+.price {
+    font-weight: bolder;
+}
+
+// Set height of the duration
+@for $i from 0 through 24 {
+    .duration-#{$i} {
+        height: $i * 1.5rem;
+        transition: height 0.5s ease;
+    }
+
+    .duration-#{$i}:hover {
+        height: $i*1.5 + 1.5rem;
+    }
+}

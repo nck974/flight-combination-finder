@@ -22,7 +22,7 @@ class DateUtilsTest {
         LocalDate endDate = LocalDate.of(2024, 3, 15);
 
         // Act
-        List<LocalDate> dates = new DateUtils().getDatesRange(startDate, endDate);
+        List<LocalDate> dates = DateUtils.getDatesRange(startDate, endDate);
 
         // Assert
         assertNotNull(dates);
@@ -36,11 +36,17 @@ class DateUtilsTest {
         // Arrange
         LocalDate startDate = LocalDate.of(2024, 3, 15);
         LocalDate endDate = LocalDate.of(2024, 3, 10);
-        DateUtils dateUtils = new DateUtils();
 
         // Act & Assert
         assertThrows(InvalidDateException.class, () -> {
-            dateUtils.getDatesRange(startDate, endDate);
+            DateUtils.getDatesRange(startDate, endDate);
+        });
+    }
+
+    @Test
+    void testConstructorThrowsException() {
+        assertThrows(IllegalStateException.class, () -> {
+            new DateUtils();
         });
     }
 

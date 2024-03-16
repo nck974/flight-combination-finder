@@ -1,0 +1,10 @@
+<div
+    class="event duration-{{duration}}" [style.background-color]="backgroundColor">
+    <div class="price">
+        {{price}}€
+    </div>
+    <div class="schedule">
+        {{departureDate | timeFormat}} →
+        {{landingDate | timeFormat}}
+    </div>
+</div>

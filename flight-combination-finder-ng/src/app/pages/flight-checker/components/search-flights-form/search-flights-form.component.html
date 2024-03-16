@@ -1,77 +1,74 @@
-<div class="form-wrapper">
-  <form #myForm [formGroup]="formQuery" (ngSubmit)="onSubmit()">
+<div class="common-view-container form-container">
+  <form class="form" [formGroup]="formQuery" (ngSubmit)="onSubmit()">
 
-    <div class="control">
-
-      <!-- Dates -->
-      <div>
-        <mat-form-field>
-          <mat-label>Enter the search range</mat-label>
-          <mat-date-range-input [formGroup]="formQuery" [rangePicker]="picker">
-            <input matStartDate formControlName="startDate"
-              placeholder="Start date">
-            <input matEndDate formControlName="endDate" placeholder="End date">
-          </mat-date-range-input>
-          <mat-datepicker-toggle matIconSuffix
-            [for]="picker"></mat-datepicker-toggle>
-          <mat-date-range-picker #picker></mat-date-range-picker>
-
-          @if (formQuery.controls.startDate.hasError('matStartDateInvalid')) {
-          <mat-error>Invalid start date</mat-error>
-          }
-          @if (formQuery.controls.endDate.hasError('matEndDateInvalid')) {
-          <mat-error>Invalid end date</mat-error>
-          }
-        </mat-form-field>
-      </div>
-
-      <!-- Submit -->
-      <div class="submit-wrapper">
-        <button mat-raised-button color="primary" type="submit"
-          [disabled]="!formQuery.valid">Search</button>
-      </div>
+    <!-- Dates -->
+    <div class="dates-container">
+      <mat-form-field>
+        <mat-label>Enter the search range</mat-label>
+        <mat-date-range-input [formGroup]="formQuery" [rangePicker]="picker">
+          <input matStartDate formControlName="startDate"
+            placeholder="Start date">
+          <input matEndDate formControlName="endDate" placeholder="End date">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix
+          [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+        <mat-error>Invalid date</mat-error>
+      </mat-form-field>
     </div>
 
     <!-- Routes -->
-    <div class="routes" formArrayName="routes">
+    <div class="routes-container" formArrayName="routes">
       @for(route of routesControl.controls; track route; let i = $index){
-      <div class="route" [formGroupName]="i">
+      <div class="route-container" [formGroupName]="i">
 
-        <!-- Origin -->
-        <div>
-          <mat-form-field class="example-form-field">
-            <mat-label>Origin</mat-label>
-            <input matInput type="text" formControlName="origin"
-              id="origin-{{i}}" required>
-          </mat-form-field>
-        </div>
+        <!-- Single route fields -->
+        <div class="route-fields">
+          <!-- Origin -->
+          <div>
+            <mat-form-field class="example-form-field">
+              <mat-label>Origin</mat-label>
+              <input matInput type="text" formControlName="origin"
+                id="origin-{{i}}" required>
+            </mat-form-field>
+          </div>
 
-        <!-- Destination -->
-        <div>
-          <mat-form-field class="example-form-field">
-            <mat-label>Destination</mat-label>
-            <input matInput type="text" formControlName="destination"
-              id="destination-{{i}}" required>
-          </mat-form-field>
+          <!-- Destination -->
+          <div>
+            <mat-form-field class="example-form-field">
+              <mat-label>Destination</mat-label>
+              <input matInput type="text" formControlName="destination"
+                id="destination-{{i}}" required>
+            </mat-form-field>
+          </div>
         </div>
-
-        <!-- Extra route controls -->
-        <div>
-          <button mat-mini-fab color="primary" type="button"
-            (click)="onAddRoute()">
-            <mat-icon>add</mat-icon>
-          </button>
+        <!-- Single route controls -->
+        <div class="route-controls">
+          <!-- Add -->
+          <div>
+            <button mat-mini-fab color="primary" type="button"
+              (click)="onAddRoute()">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+          <!-- Remove -->
+          @if(i != 0){
+          <div>
+            <button mat-mini-fab color="warn" type="button"
+              (click)="onRemoveRoute(i)">
+              <mat-icon>remove</mat-icon>
+            </button>
+          </div>
+          }
         </div>
-        @if(i != 0){
-        <div>
-          <button mat-mini-fab color="warn" type="button"
-            (click)="onRemoveRoute(i)">
-            <mat-icon>remove</mat-icon>
-          </button>
-        </div>
-        }
       </div>
       }
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-container">
+      <button mat-raised-button color="primary" type="submit"
+        [disabled]="!formQuery.valid">Search</button>
     </div>
 
   </form>
