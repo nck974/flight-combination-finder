@@ -9,6 +9,8 @@ import java.util.List;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.nichoko.domain.dto.ConnectionDTO;
+import com.nichoko.domain.dto.ConnectionQueryDTO;
 import com.nichoko.domain.dto.FlightDTO;
 import com.nichoko.domain.dto.FlightQueryDTO;
 import com.nichoko.domain.dto.FlightQueryDTO.RouteCombination;
@@ -28,7 +30,10 @@ public class RyanairService implements AirlineService {
     @ConfigProperty(name = "flights.airlines.ryanair-schedules")
     private String flightsUrl;
 
-    private List<String> buildUrls(FlightQueryDTO query) {
+    @ConfigProperty(name = "flights.airlines.airport-connections")
+    private String airportConnectionsUrl;
+
+    private List<String> buildGetCompanyFlightsUrls(FlightQueryDTO query) {
         List<String> urls = new ArrayList<>();
 
         for (RouteCombination route : query.getRoutes()) {
@@ -52,6 +57,12 @@ public class RyanairService implements AirlineService {
         }
 
         return urls;
+    }
+
+    private String buildGetAirportConnections(ConnectionQueryDTO query) {
+        StringBuilder urlBuilder = new StringBuilder(airportConnectionsUrl + "/");
+        urlBuilder.append(query.getOrigin());
+        return urlBuilder.toString();
     }
 
     private List<FlightDTO> toFlightDTO(Response response) {
@@ -93,6 +104,27 @@ public class RyanairService implements AirlineService {
 
     }
 
+    private List<ConnectionDTO> toConnectionDTO(Response response, ConnectionQueryDTO query) {
+        JsonNode responseContent = response.readEntity(JsonNode.class);
+
+        List<ConnectionDTO> connections = new ArrayList<>();
+        if (responseContent.isArray()) {
+            for (JsonNode connectionNode : responseContent) {
+                ConnectionDTO connection = new ConnectionDTO();
+                JsonNode arrivalAirport = connectionNode.get("arrivalAirport");
+                connection.setDestination(arrivalAirport.get("code").asText());
+                connection.setOrigin(query.getOrigin());
+                connections.add(connection);
+            }
+        } else {
+            throw new ErrorFetchingDataException("No connections found", 404);
+        }
+
+        connections.sort(Comparator.comparing(ConnectionDTO::getDestination));
+        return connections;
+
+    }
+
     private List<FlightDTO> sendGetFlightsQuery(String url) {
         Client client = ClientBuilder.newClient();
 
@@ -114,9 +146,30 @@ public class RyanairService implements AirlineService {
         return flights;
     }
 
+    private List<ConnectionDTO> sendGetConnectionsQuery(String url, ConnectionQueryDTO query) {
+        Client client = ClientBuilder.newClient();
+
+        List<ConnectionDTO> flights;
+        try {
+            log.info("Fetching url:\n" + url);
+            Response response = client.target(url).request().get();
+
+            if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                flights = toConnectionDTO(response, query);
+            } else {
+                throw new ErrorFetchingDataException(
+                        "Failed to fetch data from Ryanair API. Status code: " + response.getStatus(),
+                        response.getStatus());
+            }
+        } finally {
+            client.close();
+        }
+        return flights;
+    }
+
     @Override
     public List<FlightDTO> getCompanyFlights(FlightQueryDTO query) {
-        List<String> urls = buildUrls(query);
+        List<String> urls = buildGetCompanyFlightsUrls(query);
 
         List<FlightDTO> flights = new ArrayList<>();
         for (String url : urls) {
@@ -124,6 +177,12 @@ public class RyanairService implements AirlineService {
         }
         return flights;
 
+    }
+
+    @Override
+    public List<ConnectionDTO> getAirportConnections(ConnectionQueryDTO query) {
+        String url = buildGetAirportConnections(query);
+        return this.sendGetConnectionsQuery(url, query);
     }
 
 }
