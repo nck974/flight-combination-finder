@@ -5,8 +5,21 @@
 <app-loading-spinner></app-loading-spinner>
 }@else {
 @if(error){
-    <app-user-messages [error]="error"></app-user-messages>
+<app-user-messages [error]="error"></app-user-messages>
 }@else {
-    <app-display-flights [flights]="flights" [query]="query" [routes]="routes"></app-display-flights>
+@if (flights && routes){
+<!-- Delete -->
+<div class="delete-query-container"
+    (click)="onClearResults()">
+    <button mat-raised-button  color="warn"
+        aria-label="Remove results">
+        <mat-icon>delete</mat-icon> Clear results
+    </button>
+</div>
+
+<!-- Table -->
+<app-display-flights [flights]="flights" [query]="query"
+    [routes]="routes"></app-display-flights>
+}
 }
 }

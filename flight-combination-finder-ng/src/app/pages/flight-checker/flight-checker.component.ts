@@ -9,6 +9,8 @@ import { FlightsService } from '../../shared/services/flights.service';
 import { DisplayFlightsComponent } from './components/display-flights/display-flights.component';
 import { SearchFlightsFormComponent } from './components/search-flights-form/search-flights-form.component';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-flight-checker',
@@ -18,6 +20,8 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
     DisplayFlightsComponent,
     UserMessagesComponent,
     LoadingSpinnerComponent,
+    MatButtonModule,
+    MatIconModule
   ],
   templateUrl: './flight-checker.component.html',
   styleUrl: './flight-checker.component.scss'
@@ -78,6 +82,12 @@ export class FlightCheckerComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.flightSearchSubscription?.unsubscribe();
+  }
+
+  onClearResults(): void {
+    this.error = undefined;
+    this.flights = undefined;
+    this.routes = undefined;
   }
 
   onSearchFlights(query: FlightQuery): void {
