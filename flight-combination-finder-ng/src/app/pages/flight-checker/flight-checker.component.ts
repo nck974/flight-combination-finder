@@ -11,6 +11,7 @@ import { SearchFlightsFormComponent } from './components/search-flights-form/sea
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { TutorialComponent } from './components/tutorial/tutorial.component';
 
 @Component({
   selector: 'app-flight-checker',
@@ -21,7 +22,8 @@ import { MatIconModule } from '@angular/material/icon';
     UserMessagesComponent,
     LoadingSpinnerComponent,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    TutorialComponent
   ],
   templateUrl: './flight-checker.component.html',
   styleUrl: './flight-checker.component.scss'

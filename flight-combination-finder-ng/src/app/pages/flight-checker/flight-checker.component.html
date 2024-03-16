@@ -4,22 +4,29 @@
 @if(isLoading){
 <app-loading-spinner></app-loading-spinner>
 }@else {
-@if(error){
-<app-user-messages [error]="error"></app-user-messages>
-}@else {
-@if (flights && routes){
-<!-- Delete -->
+
+@if(error || flights && routes){
+<!-- Delete button -->
 <div class="delete-query-container"
     (click)="onClearResults()">
-    <button mat-raised-button  color="warn"
+    <button mat-raised-button color="warn"
         aria-label="Remove results">
         <mat-icon>delete</mat-icon> Clear results
     </button>
 </div>
-
+<!-- Error message -->
+@if(error){
+<app-user-messages [error]="error"></app-user-messages>
+}@else {
 <!-- Table -->
+@if (flights && routes){
 <app-display-flights [flights]="flights" [query]="query"
     [routes]="routes"></app-display-flights>
 }
 }
+}@else {
+    <!-- Show tutorial -->
+    <app-tutorial></app-tutorial>
+}
+
 }
