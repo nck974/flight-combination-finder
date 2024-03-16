@@ -6,5 +6,9 @@
     <mat-spinner color="red"></mat-spinner>
 </div>
 }@else {
-<app-display-flights [flights]="flights" [query]="query" [routes]="routes"></app-display-flights>
+@if(error){
+    <app-user-messages [error]="error"></app-user-messages>
+}@else {
+    <app-display-flights [flights]="flights" [query]="query" [routes]="routes"></app-display-flights>
+}
 }

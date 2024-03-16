@@ -7,6 +7,8 @@ import { FlightQuery } from '../../model/flight-query';
 import { Subscription, finalize } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Route } from '../../model/route';
+import { ResponseError } from '../../model/response-error';
+import { UserMessagesComponent } from '../../shared/components/user-messages/user-messages.component';
 
 @Component({
   selector: 'app-flight-checker',
@@ -14,6 +16,7 @@ import { Route } from '../../model/route';
   imports: [
     SearchFlightsFormComponent,
     DisplayFlightsComponent,
+    UserMessagesComponent,
     MatProgressSpinnerModule,
   ],
   templateUrl: './flight-checker.component.html',
@@ -22,6 +25,7 @@ import { Route } from '../../model/route';
 export class FlightCheckerComponent implements OnDestroy {
   private flightSearchSubscription?: Subscription;
   isLoading = false;
+  error?: ResponseError;
   query?: FlightQuery = {
     routes: [
       {
@@ -80,18 +84,27 @@ export class FlightCheckerComponent implements OnDestroy {
     if (!query) {
       return;
     }
+
+    // Reset data
     this.isLoading = true;
     this.query = query;
+    this.error = undefined;
+
+    // Make query
     this.flightSearchSubscription = this.flightService.getFlights(query)
       .pipe(
-        finalize(() => this.isLoading = false)
+        finalize(() => this.isLoading = false),
       )
       .subscribe(
-        (response) => {
-          console.log("Displaying new flights...");
-          this.flights = response.flights;
-          this.routes = response.availableRoutes;
+        {
+          next: (response) => {
+            console.log("Displaying new flights...");
+            this.flights = response.flights;
+            this.routes = response.availableRoutes;
+          },
+          error: (error: ResponseError) => this.error = error
         }
-      );
+      )
+      ;
   }
 }

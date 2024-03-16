@@ -10,6 +10,7 @@ import org.jboss.resteasy.reactive.RestResponse;
 import com.nichoko.domain.dto.FlightDTO;
 import com.nichoko.domain.dto.FlightQueryDTO;
 import com.nichoko.domain.dto.ItineraryResponseDTO;
+import com.nichoko.exception.NoFlightsFoundException;
 import com.nichoko.service.interfaces.AirlineService;
 import com.nichoko.service.interfaces.FlightService;
 import com.nichoko.service.interfaces.FlightsDetailsService;
@@ -50,6 +51,8 @@ public class FlightResource {
             logger.info("Saving to the database:\n" + query.getRoutesCombinations() + "...");
             flights = flightService.saveFlights(flights);
             flights = this.flightsDetailsService.setFlightsDuration(flights);
+        }else{
+            throw new NoFlightsFoundException("No flights could be found.", 4000);
         }
         ItineraryResponseDTO itineraryResponseDTO = new ItineraryResponseDTO();
         itineraryResponseDTO.setFlights(flights);
