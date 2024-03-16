@@ -64,14 +64,15 @@ public class FlightResource {
     @Path("/test")
     @POST
     public RestResponse<ItineraryResponseDTO> getAllFlightsTest(FlightQueryDTO query) {
+        logger.info("Generating test response...");
         List<FlightDTO> flights = new ArrayList<>();
 
         FlightDTO flight = new FlightDTO();
         flight.setOrigin("NUE");
         flight.setDestination("STN");
         flight.setPrice(19.99f);
-        flight.setDepartureDate(LocalDateTime.of(2024, 3, 15, 12, 47, 0));
-        flight.setLandingDate(LocalDateTime.of(2024, 3, 15, 15, 47, 0));
+        flight.setDepartureDate(LocalDateTime.of(2024, 3, 25, 12, 47, 0));
+        flight.setLandingDate(LocalDateTime.of(2024, 3, 25, 15, 47, 0));
         flight.setId(1l);
         flight.setCreatedAt(LocalDateTime.now());
         flights.add(flight);
@@ -90,8 +91,8 @@ public class FlightResource {
         flight3.setOrigin("STN");
         flight3.setDestination("SDR");
         flight3.setPrice(20.99f);
-        flight3.setDepartureDate(LocalDateTime.of(2024, 3, 15, 23, 47, 0));
-        flight3.setLandingDate(LocalDateTime.of(2024, 3, 16, 2, 47, 0));
+        flight3.setDepartureDate(LocalDateTime.of(2024, 3, 25, 23, 47, 0));
+        flight3.setLandingDate(LocalDateTime.of(2024, 3, 26, 2, 47, 0));
         flight3.setId(1l);
         flight3.setCreatedAt(LocalDateTime.now());
         flights.add(flight3);

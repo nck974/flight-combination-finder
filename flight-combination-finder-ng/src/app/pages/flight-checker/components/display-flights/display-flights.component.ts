@@ -6,11 +6,18 @@ import { DateFormatPipe } from '../../../../shared/pipes/date-format.pipe';
 import { TimeFormatPipe } from '../../../../shared/pipes/time-format.pipe';
 import { Route } from '../../../../model/route';
 import { DateWeekdayPipe } from '../../../../shared/pipes/date-weekday.pipe';
+import { FlightEventComponent } from '../flight-event/flight-event.component';
 
 @Component({
   selector: 'app-display-flights',
   standalone: true,
-  imports: [DateFormatPipe, TimeFormatPipe, MatDividerModule, DateWeekdayPipe],
+  imports: [
+    DateFormatPipe,
+    TimeFormatPipe,
+    MatDividerModule,
+    DateWeekdayPipe,
+    FlightEventComponent
+  ],
   templateUrl: './display-flights.component.html',
   styleUrl: './display-flights.component.scss'
 })
@@ -20,7 +27,6 @@ export class DisplayFlightsComponent implements OnInit {
   @Input() routes?: Route[];
 
   dates: Date[] = [];
-  hours = Array.from({ length: 24 }, (_, index) => `${index}`);
   flightsByDateAndHour: { [date: string]: { [route: string]: (Flight[] | Route[]) } } = {};
   dayWithFlight: { [date: string]: boolean } = {};
   dayMinHour: { [date: string]: number } = {};
@@ -58,7 +64,6 @@ export class DisplayFlightsComponent implements OnInit {
 
     let departureHour = flight.departureDate.getHours();
     if ((!this.dayMinHour[dateKey] && this.dayMinHour[dateKey] !== 0) || this.dayMinHour[dateKey] > departureHour) {
-      console.log(`Overwriting ${dateKey} which was ${this.dayMinHour[dateKey]} with ${departureHour}`);
       this.dayMinHour[dateKey] = departureHour;
     }
 
@@ -67,7 +72,6 @@ export class DisplayFlightsComponent implements OnInit {
     // Handle scenario of multi-day flights
     if (flight.landingDate.getDay() != flight.departureDate.getDay()) {
       const landingDateKey = `${flight.landingDate.toDateString()}`;
-      console.log(`Setting with ${landingDateKey} hour ${landingHour}`);
 
       this.dayMinHour[landingDateKey] = 0;
       if (!this.dayMaxHour[landingDateKey] || this.dayMaxHour[landingDateKey] < landingHour) {
@@ -76,10 +80,7 @@ export class DisplayFlightsComponent implements OnInit {
       this.dayMaxHour[dateKey] = 23;
     }
     else if (!this.dayMaxHour[dateKey] || this.dayMaxHour[dateKey] < landingHour) {
-      console.log(`Setting with ${dateKey} max-hour ${landingHour}`);
       this.dayMaxHour[dateKey] = landingHour;
-    } else {
-      console.log(`Not setting in ${dateKey} (${route}) max-hour ${landingHour}`);
     }
   }
 
@@ -131,14 +132,6 @@ export class DisplayFlightsComponent implements OnInit {
     // Loop through all flights and save the flights
     this.groupFlights(flights);
     this.groupRoutes(routes);
-
-
-    console.log("this.flightsByDateAndHour");
-    console.log(this.flightsByDateAndHour)
-    console.log("this.dayMinHour");
-    console.log(this.dayMinHour)
-    console.log("this.dayMaxHour");
-    console.log(this.dayMaxHour)
   }
 
 

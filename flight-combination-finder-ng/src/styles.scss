@@ -14,6 +14,8 @@ body {
     --default-border: solid 1px white;
     --color-error: red;
     --min-width: 320px;
+    --default-gap: 1rem;
 }
 
 @import './styles/alignment';
+@import './styles/common';

@@ -1,40 +1,42 @@
 @if(query && flightsByDateAndHour && dayWithFlight){
 
-<div class="all-flights-container">
+<div class="common-view-container all-flights-container">
   <!-- Loop through all days -->
   @for (date of dates; track date; let dateIndex = $index){
 
   <!-- Only show days with flight -->
   @if(dayWithFlight[date.toDateString()]){
-  <div class="flight-container">
+  <div class="day-container">
 
     <!-- Date -->
-    <div class="day-container header">
-      <div [class.routes-header]="dateIndex==0">
+    <div class="date-container header">
+      <!-- Match styling of the header for the first row -->
+      <div [class.header-padding]="dateIndex==0">
         {{date | dateFormat}}
+        <br>
         {{date | dateWeekday}}
       </div>
     </div>
 
     <!-- Collection of flights for the day -->
-    <div class="routes-container">
+    <div class="flights-table-container">
 
       <!-- Header -->
       @if(dateIndex == 0){
-      <div class="routes-header">
-        <div class="hour header">
+      <div class="flights-table-header header-padding">
+        <div class="header hour-column">
           Hour
         </div>
         @for(route of query.routes; track route){
-        <div class="header-route header">
+        <div class="header route-column">
           {{route.origin}} - {{route.destination}}
         </div>
         }
-        <div class="header-route header">
+        <div class="header route-column">
           Complete route
         </div>
       </div>
-      <mat-divider class="divider"></mat-divider>
+      <mat-divider class="header-divider"></mat-divider>
       }
 
       <!-- Table with flights -->
@@ -43,55 +45,48 @@
       dayMaxHour[date.toDateString()]);
       track hour;
       let hourIndex=$index){
-      <div class="hour-container">
+      <div class="hour-row">
 
         <!-- Hour -->
-        <div class="hour">
+        <div class="hour-column">
           {{hour}}:00
         </div>
 
         <!-- Flight per airport -->
         @for(route of query.routes; track route){
-        <div class="event-container">
+        <div class="event-container route-column">
           @if(flightsByDateAndHour[date.toDateString()+hour]){
           <!-- Flights in hour and airport -->
           @for( flight of
           flightsByDateAndHour[date.toDateString()+hour][route.origin
           + '-' + route.destination]; track
           flight){
-          <div
-            class="event color-{{hourIndex}}-{{$index}} duration-{{flight.duration}}">
-            <div class="price">
-              {{flight.price}}€
-            </div>
-            <div class="schedule">
-              {{flight.departureDate | timeFormat}} →
-              {{flight.landingDate | timeFormat}}
-            </div>
-            <br>
-          </div>
+          <app-flight-event
+            [hourIndex]="hourIndex"
+            [duration]="flight.duration"
+            [price]="flight.price"
+            [landingDate]="flight.landingDate"
+            [departureDate]="flight.departureDate">
+          </app-flight-event>
           }
           }
         </div>
         }
 
         <!-- Summary -->
-        <div class="event-container">
+        <div class="event-container route-column">
           @if(flightsByDateAndHour[date.toDateString()+hour]){
           <!-- Summary of the day -->
           @for( route of
-          flightsByDateAndHour[date.toDateString()+hour]["summary"]; track route){
-          <div
-            class="event color-{{hourIndex}}-{{$index}} duration-{{route.duration}}">
-            <div class="price">
-              {{route.price}}€
-            </div>
-            <div class="schedule">
-              {{route.departureDate | timeFormat}} →
-              {{route.landingDate | timeFormat}}
-            </div>
-            <br>
-          </div>
+          flightsByDateAndHour[date.toDateString()+hour]["summary"]; track
+          route){
+          <app-flight-event
+            [hourIndex]="hourIndex"
+            [duration]="route.duration"
+            [price]="route.price"
+            [landingDate]="route.landingDate"
+            [departureDate]="route.departureDate">
+          </app-flight-event>
           }
           }
         </div>
