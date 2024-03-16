@@ -50,6 +50,17 @@ export class DisplayFlightsComponent implements OnInit {
     return 0
   }
 
+  get minScreenWidth(): string {
+    const size =
+      (this.nrColumns + 1) * 6.5 + // Column
+      (this.nrColumns) * 1 + // Gap
+      2.5 + // hour
+      4 + // date
+      4; // padding/margin
+    console.log(size);
+    return `${size}rem`;
+  }
+
   private initializeDayData(dateTimeKey: string, route: string): void {
     if (!this.flightsByDateAndHour[dateTimeKey]) {
       this.flightsByDateAndHour[dateTimeKey] = {};

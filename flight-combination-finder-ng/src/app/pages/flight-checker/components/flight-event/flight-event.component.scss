@@ -33,13 +33,3 @@
         height: $i*1.5 + 1.5rem;
     }
 }
-
-// Set random colors for each flight
-@for $i from 0 through 24 {
-    .color-#{$i} {
-        background-color: rgba(random(255), // Randomize red component
-                random(255), // Randomize green component
-                random(255), // Randomize blue component
-                0.5);
-    }
-}

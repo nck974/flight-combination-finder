@@ -9,6 +9,7 @@ import { TimeFormatPipe } from '../../../../shared/pipes/time-format.pipe';
   styleUrl: './flight-event.component.scss'
 })
 export class FlightEventComponent {
+  @Input({ required: true }) backgroundColor!: string;
   @Input({ required: true }) duration!: number;
   @Input({ required: true }) hourIndex!: number;
   @Input({ required: true }) price!: number;

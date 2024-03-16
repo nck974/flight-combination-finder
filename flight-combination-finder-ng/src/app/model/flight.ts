@@ -6,5 +6,5 @@ export interface Flight{
     departureDate: Date;
     landingDate: Date;
     createdAt: Date;
-    duration?: number;
+    duration: number;
 }

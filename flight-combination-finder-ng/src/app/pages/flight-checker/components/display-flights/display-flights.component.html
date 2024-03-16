@@ -1,6 +1,6 @@
 @if(query && flightsByDateAndHour && dayWithFlight){
 
-<div class="common-view-container all-flights-container">
+<div class="common-view-container all-flights-container" [style.min-width]="minScreenWidth">
   <!-- Loop through all days -->
   @for (date of dates; track date; let dateIndex = $index){
 
@@ -66,7 +66,8 @@
             [duration]="flight.duration"
             [price]="flight.price"
             [landingDate]="flight.landingDate"
-            [departureDate]="flight.departureDate">
+            [departureDate]="flight.departureDate"
+            [backgroundColor]="'#1c1a6c'">
           </app-flight-event>
           }
           }
@@ -85,7 +86,8 @@
             [duration]="route.duration"
             [price]="route.price"
             [landingDate]="route.landingDate"
-            [departureDate]="route.departureDate">
+            [departureDate]="route.departureDate"
+            [backgroundColor]="'#0a660b'">
           </app-flight-event>
           }
           }
