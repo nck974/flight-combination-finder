@@ -9,6 +9,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class ConnectionsResponseDTO {
+public class ConnectionResponseDTO {
     List<ConnectionDTO> connections;
 }

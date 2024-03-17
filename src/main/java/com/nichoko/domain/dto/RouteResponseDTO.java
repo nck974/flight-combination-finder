@@ -1,14 +1,14 @@
 package com.nichoko.domain.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
 @AllArgsConstructor
-public class ConnectionQueryDTO {
-    private String origin;
+public class RouteResponseDTO {
+    List<List<ConnectionDTO>> routes;
 }

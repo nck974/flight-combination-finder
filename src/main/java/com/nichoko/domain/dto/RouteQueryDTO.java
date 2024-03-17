@@ -1,6 +1,5 @@
 package com.nichoko.domain.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -8,7 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@AllArgsConstructor
-public class ConnectionQueryDTO {
+public class RouteQueryDTO {
     private String origin;
+    private String destination;
+    private int maxNrConnections;
 }
