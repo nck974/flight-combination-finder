@@ -10,7 +10,10 @@ import lombok.Setter;
 public class ConnectionsGraphNodeDTO {
     Long id;
     String name;
+    String completeName;
     Float symbolSize;
     Float value;
     Long category;
+    Double x;
+    Double y;
 }

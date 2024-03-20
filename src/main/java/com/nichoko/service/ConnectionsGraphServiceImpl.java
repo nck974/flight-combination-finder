@@ -5,17 +5,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.nichoko.domain.dto.AirportDTO;
 import com.nichoko.domain.dto.ConnectionDTO;
 import com.nichoko.domain.dto.graph.ConnectionsGraphCategoryDTO;
 import com.nichoko.domain.dto.graph.ConnectionsGraphDTO;
 import com.nichoko.domain.dto.graph.ConnectionsGraphLinkDTO;
 import com.nichoko.domain.dto.graph.ConnectionsGraphNodeDTO;
+import com.nichoko.service.interfaces.AirportService;
 import com.nichoko.service.interfaces.ConnectionsGraphService;
+import com.nichoko.utils.ColorUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class ConnectionsGraphServiceImpl implements ConnectionsGraphService {
+
+    private ColorUtils colorUtils;
+    private AirportService airportService;
+
+    @Inject
+    public ConnectionsGraphServiceImpl(ColorUtils colorUtils, AirportService airportService) {
+        this.colorUtils = colorUtils;
+        this.airportService = airportService;
+    }
 
     @Override
     public ConnectionsGraphDTO getRoutesGraph(List<List<ConnectionDTO>> routes) {
@@ -55,10 +68,13 @@ public class ConnectionsGraphServiceImpl implements ConnectionsGraphService {
                 routeLinks.add(link);
 
             }
-
+            
+            // Set route parameters in each link
             String routeName = routeNameBuilder.toString();
+            String color = colorUtils.generateRandomHexColor();
             for (ConnectionsGraphLinkDTO link : routeLinks) {
                 link.setRouteName(routeName);
+                link.setColor(color);
             }
 
             links.addAll(routeLinks);
@@ -83,7 +99,7 @@ public class ConnectionsGraphServiceImpl implements ConnectionsGraphService {
             airportIdMapping.put(airport, idCounter);
 
             // Graph node
-            ConnectionsGraphNodeDTO node = buildNode(idCounter, airport);
+            ConnectionsGraphNodeDTO node = buildAirportNode(idCounter, airport);
 
             nodes.add(node);
             categories.add(new ConnectionsGraphCategoryDTO(airport));
@@ -93,13 +109,19 @@ public class ConnectionsGraphServiceImpl implements ConnectionsGraphService {
         return idCounter;
     }
 
-    private ConnectionsGraphNodeDTO buildNode(Long idCounter, String originAirport) {
+    private ConnectionsGraphNodeDTO buildAirportNode(Long idCounter, String originAirport) {
+
+        AirportDTO airport = airportService.getAirport(originAirport);
+
         ConnectionsGraphNodeDTO node = new ConnectionsGraphNodeDTO();
         node.setId(idCounter);
         node.setName(originAirport);
+        node.setCompleteName(airport.getName());
         node.setCategory(idCounter);
         node.setSymbolSize(30.0f);
         node.setValue(50.0f);
+        node.setX(airport.getLonDecimal());
+        node.setY(airport.getLatDecimal());
         return node;
     }
 

@@ -1,7 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { NgxEchartsDirective, provideEcharts } from 'ngx-echarts';
 import { RoutesGraph } from '../../../../model/graph/routes-graph';
-import { EChartsOption } from 'echarts';
+import { EChartsOption, registerMap } from 'echarts';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-connections-graph',
@@ -17,88 +18,23 @@ export class ConnectionsGraphComponent {
   @Input({ required: true }) graphData!: RoutesGraph;
   options?: EChartsOption;
 
-  graph = {
-    "nodes": [{
-      "id": "0",
-      "name": "SDR",
-      "symbolSize": 100,
-      "x": -200.82776,
-      "y": 400.6904,
-      "value": 50,
-      "category": 0,
-      "label": {
-        "show": true,
-        "formatter": "{b}: {@score}"
-      },
-    }, {
-      "id": "1",
-      "name": "STN",
-      "symbolSize": 50,
-      "x": -212.76357,
-      "y": 245.29176,
-      "value": 50,
-      "category": 0
-    }, {
-      "id": "2",
-      "name": "NUE",
-      "symbolSize": 50,
-      "x": -379.30386,
-      "y": 429.06424,
-      "value": 50,
-      "category": 0
-    }, {
-      "id": "3",
-      "name": "OVD",
-      "symbolSize": 50,
-      "x": -332.6012,
-      "y": 485.16974,
-      "value": 50,
-      "category": 0
-    },
+  constructor(private http: HttpClient) { }
 
-    ],
-    "links": [{
-      "source": "0",
-      "target": "1",
-    }, {
-      "source": "1",
-      "target": "2",
-    }, {
-      "source": "1",
-      "target": "2",
-    }, {
-      "source": "3",
-      "target": "1",
-    },
-    {
-      "source": 0,
-      "target": 1,
-      // "symbolSize": [5, 20],
-      "label": {
-        "show": true,
-        "formatter": "OVD -> STN -> SDR"
-      },
-      "lineStyle": {
-        // "width": 5,
-      }
-    },
-    ],
-    "categories": [{
-      "name": "SDR"
-    }, {
-      "name": "AGP"
-    }, {
-      "name": "AGP"
-    }, {
-      "name": "AGP"
-    }, {
-      "name": "AGP"
-    }
-    ]
-  };
+  // TODO: Move toa  separated component
+  loadMap(): void {
+    this.http.get('assets/maps/world.json').subscribe((mapData: any) => {
+      registerMap('world', mapData);
+      this.setGraphOptions();
+    });
+  }
 
   ngOnInit(): void {
     console.log(this.graphData);
+    this.loadMap()
+  }
+
+
+  private setGraphOptions() {
     this.options = {
       responsive: true,
       tooltip: {},
@@ -111,20 +47,36 @@ export class ConnectionsGraphComponent {
         {
           // name: 'SDR -> NUE',
           type: 'graph',
-          layout: 'circular',
-          data: this.graphData.nodes as any,
-          draggable: true,
-          links: this.graphData.links?.map(a => {
+          // map: "world"
+          layout: 'none',
+          data: this.graphData.nodes?.map(n => {
             return {
-              source: a.source,
-              target: a.target,
+              id: n.id.toString(),
+              name: n.name,
+              // completeName: n.completeName,
+              symbolSize: 15,
+              value: n.completeName,
+              category: n.category,
+              x: n.x,
+              y: -n.y,
+            };
+          }),
+          draggable: false,
+          links: this.graphData.links?.map(l => {
+            return {
+              source: l.source,
+              target: l.target,
               symbol: ["", "triangle"],
               link: "http://test.com",
               label: {
                 show: true,
-                formatter: a.routeName,
+                formatter: l.routeName,
+                color: l.color
+              },
+              lineStyle: {
+                color: l.color,
               }
-            }
+            };
           }),
           categories: this.graphData.categories as any,
           roam: true,
@@ -144,9 +96,24 @@ export class ConnectionsGraphComponent {
           //   color: 'source',
           // },
           autoCurveness: true,
+        },
+        {
+          type: 'map',
+          map: 'world',
+          roam: true,
+          label: {
+            show: false
+          },
+          emphasis: {
+            label: {
+              show: true
+            }
+          },
+          itemStyle: {
+            borderColor: 'rgba(0,0,0,0.2)'
+          }
         }
       ]
     };
   }
-
 }

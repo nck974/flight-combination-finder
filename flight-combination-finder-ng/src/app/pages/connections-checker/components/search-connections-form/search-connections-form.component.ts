@@ -33,7 +33,7 @@ export class SearchConnectionsFormComponent {
 
   formQuery = this.formBuilder.group({
     origin: new FormControl("NUE"),
-    destination: new FormControl("STD"),
+    destination: new FormControl("SDR"),
   });
 
   constructor(private formBuilder: FormBuilder) { }

@@ -1,9 +1,10 @@
 export interface GraphNode{
     id: number;
     name: string;
-    symbolSize?: number;
-    value?: number;
+    completeName: string;
+    symbolSize: number;
+    value: number;
     category: number;
-    x?: number;
-    y?: number;
+    x: number;
+    y: number;
 }

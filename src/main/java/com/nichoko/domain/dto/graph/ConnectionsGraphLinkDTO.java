@@ -11,4 +11,5 @@ public class ConnectionsGraphLinkDTO {
     Long source;
     Long target;
     String routeName;
+    String color;
 }
