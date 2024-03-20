@@ -1,8 +1,4 @@
-<div class="search-form-container">
-    <input type="text" placeholder="origin">
-    <input type="text" placeholder="destination">
-    <button (click)="onSearchRoutes()">Search</button>
-</div>
+<app-search-connections-form (onSearch)="onSearchRoutes($event)"></app-search-connections-form>
 @if(isLoading){
 <app-loading-spinner></app-loading-spinner>
 }@else {

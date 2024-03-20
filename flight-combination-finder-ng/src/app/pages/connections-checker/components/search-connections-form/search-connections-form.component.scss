@@ -1,0 +1,23 @@
+.form-container {
+    min-width: var(--min-width);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+// Switch the form to row for large desktop
+@media (min-width: 620px) {
+    .form {
+        flex-direction: row;
+        gap: 1rem;
+    }
+}
+
+// In mobile view expand the fields
+@media (max-width: 620px) {
+    .input-field mat-form-field{
+        width: 100%;
+    }
+}
