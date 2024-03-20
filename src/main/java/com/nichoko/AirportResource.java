@@ -8,7 +8,9 @@ import com.nichoko.domain.dto.ConnectionQueryDTO;
 import com.nichoko.domain.dto.ConnectionResponseDTO;
 import com.nichoko.domain.dto.RouteQueryDTO;
 import com.nichoko.domain.dto.RouteResponseDTO;
+import com.nichoko.domain.dto.graph.ConnectionsGraphDTO;
 import com.nichoko.service.interfaces.ConnectionService;
+import com.nichoko.service.interfaces.ConnectionsGraphService;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -25,10 +27,12 @@ import lombok.extern.jbosslog.JBossLog;
 public class AirportResource {
 
     private ConnectionService connectionService;
+    private ConnectionsGraphService connectionsGraphService;
 
     @Inject
-    AirportResource(ConnectionService connectionService) {
+    AirportResource(ConnectionService connectionService, ConnectionsGraphService connectionsGraphService) {
         this.connectionService = connectionService;
+        this.connectionsGraphService = connectionsGraphService;
     }
 
     @POST
@@ -47,12 +51,21 @@ public class AirportResource {
     @POST
     @Path("/routes")
     public RestResponse<RouteResponseDTO> getAllConnectionsBetweenTwoAirports(RouteQueryDTO query) {
-        log.info("Checking airport routes for: " + query.getOrigin() + " to " + query.getDestination());
 
         List<List<ConnectionDTO>> routes = connectionService.getRoutesBetweenTwoAirports(query);
-
         RouteResponseDTO routeResponseDTO = new RouteResponseDTO(routes);
+
         return RestResponse.ok(routeResponseDTO);
+    }
+
+    @POST
+    @Path("/routes/graph")
+    public RestResponse<ConnectionsGraphDTO> getRoutesGraphBetweenAirports(RouteQueryDTO query) {
+
+        List<List<ConnectionDTO>> routes = connectionService.getRoutesBetweenTwoAirports(query);
+        ConnectionsGraphDTO graph = connectionsGraphService.getRoutesGraph(routes);
+
+        return RestResponse.ok(graph);
     }
 
 }

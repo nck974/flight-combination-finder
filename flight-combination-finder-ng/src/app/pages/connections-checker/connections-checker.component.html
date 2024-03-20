@@ -1,1 +1,17 @@
-<p>connections-checker works!</p>
+<div class="search-form-container">
+    <input type="text" placeholder="origin">
+    <input type="text" placeholder="destination">
+    <button (click)="onSearchRoutes()">Search</button>
+</div>
+@if(isLoading){
+<app-loading-spinner></app-loading-spinner>
+}@else {
+<!-- Error message -->
+@if(error){
+<app-user-messages [error]="error"></app-user-messages>
+}@else {
+@if(connectionsGraph){
+<app-connections-graph [graphData]="connectionsGraph"></app-connections-graph>
+}
+}
+}

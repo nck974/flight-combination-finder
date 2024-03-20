@@ -150,13 +150,14 @@ public class ConnectionServiceImpl implements ConnectionService {
     }
 
     /**
-     * Find all possible routes between two airports up to a limited number of stops.
+     * Find all possible routes between two airports up to a limited number of
+     * stops.
      * 
      * @param query
      * @return
      */
     public List<List<ConnectionDTO>> getRoutesBetweenTwoAirports(RouteQueryDTO query) {
-
+        log.info("Checking airport routes for: " + query.getOrigin() + " to " + query.getDestination());
         validateRouteQuery(query);
 
         // Cache queries here
