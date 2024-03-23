@@ -1,38 +1,48 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, Output } from '@angular/core';
 import { NgxEchartsDirective, provideEcharts } from 'ngx-echarts';
 import { RoutesGraph } from '../../../../model/graph/routes-graph';
 import { EChartsOption, registerMap } from 'echarts';
 import { HttpClient } from '@angular/common/http';
+import { Observable, finalize } from 'rxjs';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-connections-graph',
   standalone: true,
-  imports: [NgxEchartsDirective],
+  imports: [NgxEchartsDirective, LoadingSpinnerComponent],
   providers: [
     provideEcharts()
   ],
   templateUrl: './connections-graph.component.html',
   styleUrl: './connections-graph.component.scss'
 })
-export class ConnectionsGraphComponent {
+export class ConnectionsGraphComponent implements OnInit {
   @Input({ required: true }) graphData!: RoutesGraph;
+  @Output() isLoading: boolean = false;
   options?: EChartsOption;
 
   constructor(private http: HttpClient) { }
 
-  // TODO: Move toa  separated component
-  loadMap(): void {
-    this.http.get('assets/maps/world.json').subscribe((mapData: any) => {
-      registerMap('world', mapData);
-      this.setGraphOptions();
-    });
-  }
 
   ngOnInit(): void {
+    console.log("Plotting the graph...");
     console.log(this.graphData);
     this.loadMap()
   }
 
+  getWorldMap(): Observable<any> {
+    return this.http.get('assets/maps/world.json');
+  }
+
+  loadMap(): void {
+    this.isLoading = true;
+    this.getWorldMap().pipe(
+      finalize(() => this.isLoading = false)
+    ).subscribe((mapData: any) => {
+      registerMap('world', mapData);
+      this.setGraphOptions();
+    });
+  }
 
   private setGraphOptions() {
     this.options = {
@@ -45,23 +55,35 @@ export class ConnectionsGraphComponent {
       ],
       series: [
         {
-          // name: 'SDR -> NUE',
           type: 'graph',
-          // map: "world"
+          coordinateSystem: 'geo',
           layout: 'none',
+          roam: true,
+          label: {
+            show: true,
+            position: 'right',
+          },
+          autoCurveness: true, // Allow  multiple connections between the same nodes
+          draggable: false,
+          // Set airports in the map
           data: this.graphData.nodes?.map(n => {
             return {
               id: n.id.toString(),
               name: n.name,
-              // completeName: n.completeName,
               symbolSize: 15,
-              value: n.completeName,
+              value: [n.x, n.y],
               category: n.category,
-              x: n.x,
-              y: -n.y,
+              tooltip: n.completeName,
+              emphasis: {
+                label: {
+                  show: true,
+                  formatter: n.completeName
+                },
+
+              },
             };
           }),
-          draggable: false,
+          // Set connections between maps
           links: this.graphData.links?.map(l => {
             return {
               source: l.source,
@@ -75,45 +97,39 @@ export class ConnectionsGraphComponent {
               },
               lineStyle: {
                 color: l.color,
-              }
+              },
+              tooltip: l.routeName,
+              emphasis: {
+                label: {
+                  show: true,
+                  formatter: l.routeName
+                },
+                lineStyle: {
+                  width: 10
+                }
+              },
             };
           }),
+          // Set the clickable labels on top of the map
           categories: this.graphData.categories as any,
-          roam: true,
-          label: {
-            show: true,
-            position: 'right',
-            //   formatter: '{b}'
-          },
-          // labelLayout: {
-          //   hideOverlap: true
-          // },
-          // scaleLimit: {
-          //   min: 0.4,
-          //   max: 2
-          // },
-          // lineStyle: {
-          //   color: 'source',
-          // },
-          autoCurveness: true,
         },
+      ],
+      // Configure the world map
+      geo: [
         {
-          type: 'map',
           map: 'world',
           roam: true,
           label: {
-            show: false
+            show: false,
           },
           emphasis: {
             label: {
-              show: true
-            }
+              show: false,
+            },
+            disabled: true
           },
-          itemStyle: {
-            borderColor: 'rgba(0,0,0,0.2)'
-          }
         }
-      ]
+      ],
     };
   }
 }

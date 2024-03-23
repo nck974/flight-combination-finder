@@ -1,13 +1,14 @@
-<app-search-connections-form (onSearch)="onSearchRoutes($event)"></app-search-connections-form>
+<app-search-connections-form
+    (onSearch)="onSearchRoutes($event)"></app-search-connections-form>
 @if(isLoading){
 <app-loading-spinner></app-loading-spinner>
 }@else {
 <!-- Error message -->
-@if(error){
-<app-user-messages [error]="error"></app-user-messages>
-}@else {
-@if(connectionsGraph){
-<app-connections-graph [graphData]="connectionsGraph"></app-connections-graph>
-}
-}
+    @if(error){
+    <app-user-messages [error]="error"></app-user-messages>
+    }@else {
+        @if(connectionsGraph){
+            <app-connections-graph [graphData]="connectionsGraph"></app-connections-graph>
+        }
+    }
 }
