@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tutorial',
@@ -12,4 +13,9 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class TutorialComponent {
 
+  constructor(private router: Router) { }
+
+  onNavigateToCombinations(): void {
+    this.router.navigateByUrl("/connections");
+  }
 }

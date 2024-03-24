@@ -1,0 +1,30 @@
+<div class="common-view-container form-container">
+    <form class="form" [formGroup]="formQuery" (ngSubmit)="onSubmit()">
+
+        <!-- Origin -->
+        <div class="input-field">
+            <mat-form-field class="example-form-field">
+                <mat-label>Origin</mat-label>
+                <input matInput type="text" formControlName="origin"
+                    id="origin" required>
+            </mat-form-field>
+        </div>
+
+        <!-- Destination -->
+        <div class="input-field">
+            <mat-form-field class="example-form-field">
+                <mat-label>Destination</mat-label>
+                <input matInput type="text"
+                    formControlName="destination"
+                    id="destination" required>
+            </mat-form-field>
+        </div>
+
+        <!-- Submit -->
+        <div class="submit-container">
+            <button mat-raised-button color="primary" type="submit"
+                [disabled]="!formQuery.valid">Search</button>
+        </div>
+
+    </form>
+</div>

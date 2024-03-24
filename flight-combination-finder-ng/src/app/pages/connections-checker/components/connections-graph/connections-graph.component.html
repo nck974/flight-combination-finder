@@ -1,0 +1,5 @@
+@if(options && !isLoading){
+<div class="chartContainer" echarts [options]="options" theme="dark"></div>
+}@else{
+<app-loading-spinner></app-loading-spinner>
+}
