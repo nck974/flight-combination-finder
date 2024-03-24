@@ -2,9 +2,9 @@ import { Component, Input, OnInit, Output } from '@angular/core';
 import { NgxEchartsDirective, provideEcharts } from 'ngx-echarts';
 import { RoutesGraph } from '../../../../model/graph/routes-graph';
 import { EChartsOption, registerMap } from 'echarts';
-import { HttpClient } from '@angular/common/http';
-import { Observable, finalize } from 'rxjs';
+import { finalize } from 'rxjs';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
+import { MapsService } from '../../../../shared/services/maps.service';
 
 @Component({
   selector: 'app-connections-graph',
@@ -21,22 +21,17 @@ export class ConnectionsGraphComponent implements OnInit {
   @Output() isLoading: boolean = false;
   options?: EChartsOption;
 
-  constructor(private http: HttpClient) { }
+  constructor(private mapService: MapsService) { }
 
 
   ngOnInit(): void {
-    console.log("Plotting the graph...");
-    console.log(this.graphData);
     this.loadMap()
   }
 
-  getWorldMap(): Observable<any> {
-    return this.http.get('assets/maps/world.json');
-  }
 
   loadMap(): void {
     this.isLoading = true;
-    this.getWorldMap().pipe(
+    this.mapService.getWorldMap().pipe(
       finalize(() => this.isLoading = false)
     ).subscribe((mapData: any) => {
       registerMap('world', mapData);
