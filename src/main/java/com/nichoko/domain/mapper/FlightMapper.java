@@ -6,10 +6,7 @@ import org.mapstruct.ReportingPolicy;
 import com.nichoko.domain.dao.Flight;
 import com.nichoko.domain.dto.FlightDTO;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
 @Mapper(componentModel = "jakarta", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-@ApplicationScoped
 public interface FlightMapper {
 
     public FlightDTO toDTO(Flight flight);

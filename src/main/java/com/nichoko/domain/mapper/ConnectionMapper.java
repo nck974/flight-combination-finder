@@ -6,10 +6,7 @@ import org.mapstruct.ReportingPolicy;
 import com.nichoko.domain.dao.Connection;
 import com.nichoko.domain.dto.ConnectionDTO;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
 @Mapper(componentModel = "jakarta", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-@ApplicationScoped
 public interface ConnectionMapper {
 
     public ConnectionDTO toDTO(Connection connection);
