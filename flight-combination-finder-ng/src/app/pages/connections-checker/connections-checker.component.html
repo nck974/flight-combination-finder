@@ -9,6 +9,8 @@
     }@else {
         @if(connectionsGraph){
             <app-connections-graph [graphData]="connectionsGraph"></app-connections-graph>
+        }@else{
+            <app-connections-tutorial></app-connections-tutorial>
         }
     }
 }

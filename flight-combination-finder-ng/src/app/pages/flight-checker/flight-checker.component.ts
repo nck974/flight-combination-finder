@@ -12,6 +12,7 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TutorialComponent } from './components/tutorial/tutorial.component';
+import { environment } from '../../../environment/environment';
 
 @Component({
   selector: 'app-flight-checker',
@@ -32,7 +33,7 @@ export class FlightCheckerComponent implements OnDestroy {
   private flightSearchSubscription?: Subscription;
   isLoading = false;
   error?: ResponseError;
-  query?: FlightQuery = {
+  query?: FlightQuery = environment.production ? undefined : {
     routes: [
       {
         origin: "NUE",
@@ -47,7 +48,7 @@ export class FlightCheckerComponent implements OnDestroy {
     endDate: new Date(2024, 2, 3),
   };
   routes?: Route[] = []
-  flights?: Flight[] = [
+  flights?: Flight[] = environment.production ? undefined : [
     {
       id: 1,
       createdAt: new Date(),

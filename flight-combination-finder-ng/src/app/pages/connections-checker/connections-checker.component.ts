@@ -8,6 +8,8 @@ import { ConnectionsGraphComponent } from './components/connections-graph/connec
 import { LoadingSpinnerComponent } from "../../shared/components/loading-spinner/loading-spinner.component";
 import { UserMessagesComponent } from "../../shared/components/user-messages/user-messages.component";
 import { SearchConnectionsFormComponent } from './components/search-connections-form/search-connections-form.component';
+import { environment } from '../../../environment/environment';
+import { ConnectionsTutorialComponent } from './components/connections-tutorial/connections-tutorial.component';
 
 @Component({
   selector: 'app-connections-checker',
@@ -18,7 +20,8 @@ import { SearchConnectionsFormComponent } from './components/search-connections-
     ConnectionsGraphComponent,
     LoadingSpinnerComponent,
     UserMessagesComponent,
-    SearchConnectionsFormComponent
+    SearchConnectionsFormComponent,
+    ConnectionsTutorialComponent
   ]
 })
 export class ConnectionsCheckerComponent implements OnDestroy {
@@ -27,7 +30,7 @@ export class ConnectionsCheckerComponent implements OnDestroy {
   error?: ResponseError;
   constructor(private connectionsService: ConnectionsService) { }
 
-  connectionsGraph?: RoutesGraph = {"nodes":[{"id":0,"name":"NUE","completeName":"NURNBERG","symbolSize":30.0,"value":50.0,"category":0,"x":11.078,"y":49.499},{"id":1,"name":"STN","completeName":"STANSTED","symbolSize":30.0,"value":50.0,"category":1,"x":0.235,"y":51.885},{"id":2,"name":"OVD","completeName":"ASTURIAS","symbolSize":30.0,"value":50.0,"category":2,"x":-6.034,"y":43.563}],"links":[{"source":0,"target":1,"routeName":"NUE->STN->OVD","color":"#7A734A","url":"origin=NUE&destination=STN&origin=STN&destination=OVD"},{"source":1,"target":2,"routeName":"NUE->STN->OVD","color":"#7A734A","url":"origin=NUE&destination=STN&origin=STN&destination=OVD"}],"categories":[{"name":"NUE"},{"name":"STN"},{"name":"OVD"}]};
+  connectionsGraph?: RoutesGraph = environment.production ? undefined : { "nodes": [{ "id": 0, "name": "NUE", "completeName": "NURNBERG", "symbolSize": 30.0, "value": 50.0, "category": 0, "x": 11.078, "y": 49.499 }, { "id": 1, "name": "STN", "completeName": "STANSTED", "symbolSize": 30.0, "value": 50.0, "category": 1, "x": 0.235, "y": 51.885 }, { "id": 2, "name": "OVD", "completeName": "ASTURIAS", "symbolSize": 30.0, "value": 50.0, "category": 2, "x": -6.034, "y": 43.563 }], "links": [{ "source": 0, "target": 1, "routeName": "NUE->STN->OVD", "color": "#7A734A", "url": "origin=NUE&destination=STN&origin=STN&destination=OVD" }, { "source": 1, "target": 2, "routeName": "NUE->STN->OVD", "color": "#7A734A", "url": "origin=NUE&destination=STN&origin=STN&destination=OVD" }], "categories": [{ "name": "NUE" }, { "name": "STN" }, { "name": "OVD" }] };
 
 
   ngOnDestroy(): void {
