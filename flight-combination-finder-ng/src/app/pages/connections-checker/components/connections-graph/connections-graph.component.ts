@@ -89,7 +89,6 @@ export class ConnectionsGraphComponent implements OnInit {
               source: l.source,
               target: l.target,
               symbol: ["", "triangle"],
-              link: "http://test.com",
               label: {
                 show: true,
                 formatter: l.routeName,
@@ -98,7 +97,14 @@ export class ConnectionsGraphComponent implements OnInit {
               lineStyle: {
                 color: l.color,
               },
-              tooltip: l.routeName,
+              tooltip: {
+                show: true,
+                showDelay: 1000,
+                hideDelay: 5000,
+                appendToBody: true,
+                extraCssText: 'pointer-events: auto!important',
+                formatter: `<a target="_blank" rel="noopener noreferrer" href="/flights?${l.url}&submit=true">${l.routeName}</a>`
+              },
               emphasis: {
                 label: {
                   show: true,
@@ -120,6 +126,9 @@ export class ConnectionsGraphComponent implements OnInit {
           map: 'world',
           roam: true,
           label: {
+            show: false,
+          },
+          tooltip: {
             show: false,
           },
           emphasis: {

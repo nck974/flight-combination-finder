@@ -3,6 +3,7 @@ import { FlightCheckerComponent } from './pages/flight-checker/flight-checker.co
 import { ConnectionsCheckerComponent } from './pages/connections-checker/connections-checker.component';
 
 export const routes: Routes = [
-    { path: '', component: FlightCheckerComponent },
+    { path: '', pathMatch: "full", redirectTo: "flights" },
+    { path: 'flights', component: FlightCheckerComponent },
     { path: 'connections', component: ConnectionsCheckerComponent },
 ];

@@ -47,6 +47,7 @@ public class ConnectionsGraphServiceImpl implements ConnectionsGraphService {
         for (List<ConnectionDTO> route : routes) {
 
             StringBuilder routeNameBuilder = new StringBuilder();
+            StringBuilder routeUrlBuilder = new StringBuilder();
             List<ConnectionsGraphLinkDTO> routeLinks = new ArrayList<>();
             for (ConnectionDTO connection : route) {
                 List<String> airports = List.of(connection.getOrigin(), connection.getDestination());
@@ -61,6 +62,17 @@ public class ConnectionsGraphServiceImpl implements ConnectionsGraphService {
                     routeNameBuilder.append(connection.getDestination());
                 }
 
+                // Build URL
+                routeUrlBuilder.append("origin=");
+                routeUrlBuilder.append(connection.getOrigin());
+                routeUrlBuilder.append("&");
+                routeUrlBuilder.append("destination=");
+                routeUrlBuilder.append(connection.getDestination());
+
+                if (connection != route.get(route.size() - 1)){
+                    routeUrlBuilder.append("&");
+                }
+
                 // Build link
                 ConnectionsGraphLinkDTO link = new ConnectionsGraphLinkDTO();
                 link.setSource(airportIdMapping.get(connection.getOrigin()));
@@ -71,10 +83,12 @@ public class ConnectionsGraphServiceImpl implements ConnectionsGraphService {
             
             // Set route parameters in each link
             String routeName = routeNameBuilder.toString();
+            String routeUrl = routeUrlBuilder.toString();
             String color = colorUtils.generateRandomHexColor();
             for (ConnectionsGraphLinkDTO link : routeLinks) {
                 link.setRouteName(routeName);
                 link.setColor(color);
+                link.setUrl(routeUrl);
             }
 
             links.addAll(routeLinks);
