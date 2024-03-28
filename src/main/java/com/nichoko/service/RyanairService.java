@@ -23,6 +23,8 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.jbosslog.JBossLog;
 
+import io.quarkus.cache.CacheResult;
+
 @ApplicationScoped
 @JBossLog
 public class RyanairService implements AirlineService {
@@ -168,6 +170,7 @@ public class RyanairService implements AirlineService {
     }
 
     @Override
+    @CacheResult(cacheName = "flightsForDate")
     public List<FlightDTO> getCompanyFlights(FlightQueryDTO query) {
         List<String> urls = buildGetCompanyFlightsUrls(query);
 
@@ -180,6 +183,7 @@ public class RyanairService implements AirlineService {
     }
 
     @Override
+    @CacheResult(cacheName = "airportConnection")
     public List<ConnectionDTO> getAirportConnections(ConnectionQueryDTO query) {
         String url = buildGetAirportConnections(query);
         return this.sendGetConnectionsQuery(url, query);

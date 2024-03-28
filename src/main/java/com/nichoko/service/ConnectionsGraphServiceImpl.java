@@ -15,6 +15,7 @@ import com.nichoko.service.interfaces.AirportService;
 import com.nichoko.service.interfaces.ConnectionsGraphService;
 import com.nichoko.utils.ColorUtils;
 
+import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -31,6 +32,7 @@ public class ConnectionsGraphServiceImpl implements ConnectionsGraphService {
     }
 
     @Override
+    @CacheResult(cacheName = "routesGraph")
     public ConnectionsGraphDTO getRoutesGraph(List<List<ConnectionDTO>> routes) {
 
         ConnectionsGraphDTO graph = new ConnectionsGraphDTO();
