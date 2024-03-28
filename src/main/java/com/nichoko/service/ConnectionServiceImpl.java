@@ -19,6 +19,7 @@ import com.nichoko.repository.ConnectionRepository;
 import com.nichoko.service.interfaces.AirlineService;
 import com.nichoko.service.interfaces.ConnectionService;
 
+import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -156,6 +157,7 @@ public class ConnectionServiceImpl implements ConnectionService {
      * @param query
      * @return
      */
+    @CacheResult(cacheName = "twoAirportsRoute")
     public List<List<ConnectionDTO>> getRoutesBetweenTwoAirports(RouteQueryDTO query) {
         log.info("Checking airport routes for: " + query.getOrigin() + " to " + query.getDestination());
         validateRouteQuery(query);

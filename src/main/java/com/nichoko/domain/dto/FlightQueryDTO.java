@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
+@EqualsAndHashCode
 public class FlightQueryDTO {
     private List<RouteCombination> routes;
     private LocalDate startDate;
