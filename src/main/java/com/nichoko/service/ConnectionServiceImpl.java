@@ -80,7 +80,7 @@ public class ConnectionServiceImpl implements ConnectionService {
             log.info("Saving to the database connections of: " + query.getOrigin() + "...");
             return this.saveConnections(connections);
         }
-        throw new NoConnectionsFoundException("No connections could be found.", 4000);
+        throw new NoConnectionsFoundException();
     }
 
     /**
@@ -119,7 +119,7 @@ public class ConnectionServiceImpl implements ConnectionService {
      */
     private void validateRouteQuery(RouteQueryDTO query) {
         if (query.getMaxNrConnections() > MAX_NR_CONNECTIONS) {
-            throw new TooManyConnectionsException("It is not possible to search more than 3 connections", 40002);
+            throw new TooManyConnectionsException();
         }
 
         if (query.getMaxNrConnections() == 0) {
@@ -199,7 +199,7 @@ public class ConnectionServiceImpl implements ConnectionService {
         }
 
         if (routes.isEmpty()) {
-            throw new NoConnectionsFoundException("No routes could be found.", 4004);
+            throw new NoConnectionsFoundException();
         }
 
         return routes;

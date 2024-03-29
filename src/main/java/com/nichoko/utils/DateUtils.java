@@ -15,7 +15,7 @@ public class DateUtils {
 
     public static List<LocalDate> getDatesRange(LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
-            throw new InvalidDateException("End date is before the start date", 1000);
+            throw new InvalidDateException();
         }
 
         List<LocalDate> dates = new ArrayList<>();

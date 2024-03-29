@@ -98,7 +98,7 @@ public class RyanairService implements AirlineService {
                 flights.add(flight);
             }
         } else {
-            throw new ErrorFetchingDataException("No flights found", 400);
+            throw new ErrorFetchingDataException();
         }
 
         flights.sort(Comparator.comparing(FlightDTO::getDepartureDate));
@@ -119,7 +119,7 @@ public class RyanairService implements AirlineService {
                 connections.add(connection);
             }
         } else {
-            throw new ErrorFetchingDataException("No connections found", 404);
+            throw new ErrorFetchingDataException();
         }
 
         connections.sort(Comparator.comparing(ConnectionDTO::getDestination));
@@ -138,9 +138,7 @@ public class RyanairService implements AirlineService {
             if (response.getStatus() == Response.Status.OK.getStatusCode()) {
                 flights = toFlightDTO(response);
             } else {
-                throw new ErrorFetchingDataException(
-                        "Failed to fetch data from Ryanair API. Status code: " + response.getStatus(),
-                        response.getStatus());
+                throw new ErrorFetchingDataException();
             }
         } finally {
             client.close();
@@ -159,9 +157,7 @@ public class RyanairService implements AirlineService {
             if (response.getStatus() == Response.Status.OK.getStatusCode()) {
                 flights = toConnectionDTO(response, query);
             } else {
-                throw new ErrorFetchingDataException(
-                        "Failed to fetch data from Ryanair API. Status code: " + response.getStatus(),
-                        response.getStatus());
+                throw new ErrorFetchingDataException();
             }
         } finally {
             client.close();

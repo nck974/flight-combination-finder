@@ -1,15 +1,8 @@
 package com.nichoko.exception;
 
-import lombok.Getter;
+public class TooManyConnectionsException extends DefaultException {
 
-@Getter()
-public class TooManyConnectionsException extends RuntimeException {
-    private final int code;
-    private final String message;
-
-    public TooManyConnectionsException(String message, int code) {
-        super(message);
-        this.code = code;
-        this.message = message;
+    public TooManyConnectionsException() {
+        super(40002, "It is not possible to search more than 3 connections");
     }
 }
