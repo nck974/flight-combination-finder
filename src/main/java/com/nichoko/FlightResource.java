@@ -52,7 +52,7 @@ public class FlightResource {
             flights = flightService.saveFlights(flights);
             flights = this.flightsDetailsService.setFlightsDuration(flights);
         }else{
-            throw new NoFlightsFoundException("No flights could be found.", 4000);
+            throw new NoFlightsFoundException();
         }
         ItineraryResponseDTO itineraryResponseDTO = new ItineraryResponseDTO();
         itineraryResponseDTO.setFlights(flights);
