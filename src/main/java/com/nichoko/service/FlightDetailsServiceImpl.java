@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.nichoko.domain.dto.FlightDTO;
-import com.nichoko.domain.dto.FlightQueryDTO;
 import com.nichoko.domain.dto.FlightRouteDTO;
-import com.nichoko.domain.dto.FlightQueryDTO.RouteCombination;
+import com.nichoko.domain.dto.query.FlightQueryDTO;
+import com.nichoko.domain.dto.query.FlightQueryDTO.RouteCombination;
 import com.nichoko.service.interfaces.FlightsDetailsService;
 import com.nichoko.utils.CartesianProduct;
 import com.nichoko.utils.DateUtils;

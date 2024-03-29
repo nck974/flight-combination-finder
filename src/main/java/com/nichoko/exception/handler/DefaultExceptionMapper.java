@@ -1,6 +1,13 @@
-package com.nichoko.exception;
+package com.nichoko.exception.handler;
 
 import com.nichoko.domain.dto.ErrorDTO;
+import com.nichoko.exception.AirportNotFoundException;
+import com.nichoko.exception.DefaultException;
+import com.nichoko.exception.ErrorFetchingDataException;
+import com.nichoko.exception.InvalidDateException;
+import com.nichoko.exception.NoConnectionsFoundException;
+import com.nichoko.exception.NoFlightsFoundException;
+import com.nichoko.exception.TooManyConnectionsException;
 
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -21,7 +28,8 @@ public class DefaultExceptionMapper implements ExceptionMapper<DefaultException>
             status = Status.INTERNAL_SERVER_ERROR;
         } else if (exception instanceof InvalidDateException || exception instanceof TooManyConnectionsException) {
             status = Status.BAD_REQUEST;
-        } else if (exception instanceof NoConnectionsFoundException || exception instanceof NoFlightsFoundException) {
+        } else if (exception instanceof NoConnectionsFoundException || exception instanceof NoFlightsFoundException
+                || exception instanceof AirportNotFoundException) {
             status = Status.NOT_FOUND;
         }
 

@@ -3,6 +3,7 @@ package com.nichoko.service;
 import com.nichoko.domain.dao.Airport;
 import com.nichoko.domain.dto.AirportDTO;
 import com.nichoko.domain.mapper.AirportMapper;
+import com.nichoko.exception.AirportNotFoundException;
 import com.nichoko.repository.AirportRepository;
 import com.nichoko.service.interfaces.AirportService;
 
@@ -24,9 +25,8 @@ public class AirportServiceImpl implements AirportService {
     public AirportDTO getAirport(String iataCode) {
         Airport airport = airportRepository.find("iataCode", iataCode).firstResult();
 
-        // TODO: Throw custom exception
         if (airport == null) {
-            throw new RuntimeException();
+            throw new AirportNotFoundException(iataCode);
         }
 
         return airportMapper.toDTO(airport);

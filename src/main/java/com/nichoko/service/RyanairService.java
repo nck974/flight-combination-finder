@@ -10,10 +10,10 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nichoko.domain.dto.ConnectionDTO;
-import com.nichoko.domain.dto.ConnectionQueryDTO;
 import com.nichoko.domain.dto.FlightDTO;
-import com.nichoko.domain.dto.FlightQueryDTO;
-import com.nichoko.domain.dto.FlightQueryDTO.RouteCombination;
+import com.nichoko.domain.dto.query.ConnectionQueryDTO;
+import com.nichoko.domain.dto.query.FlightQueryDTO;
+import com.nichoko.domain.dto.query.FlightQueryDTO.RouteCombination;
 import com.nichoko.exception.ErrorFetchingDataException;
 import com.nichoko.service.interfaces.AirlineService;
 

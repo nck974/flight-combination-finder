@@ -8,8 +8,8 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.RestResponse;
 
 import com.nichoko.domain.dto.FlightDTO;
-import com.nichoko.domain.dto.FlightQueryDTO;
-import com.nichoko.domain.dto.ItineraryResponseDTO;
+import com.nichoko.domain.dto.query.FlightQueryDTO;
+import com.nichoko.domain.dto.response.ItineraryResponseDTO;
 import com.nichoko.exception.NoFlightsFoundException;
 import com.nichoko.service.interfaces.AirlineService;
 import com.nichoko.service.interfaces.FlightService;

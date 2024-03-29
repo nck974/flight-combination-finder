@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 import com.nichoko.domain.dao.Connection;
 import com.nichoko.domain.dto.ConnectionDTO;
-import com.nichoko.domain.dto.ConnectionQueryDTO;
-import com.nichoko.domain.dto.RouteQueryDTO;
+import com.nichoko.domain.dto.query.ConnectionQueryDTO;
+import com.nichoko.domain.dto.query.RouteQueryDTO;
 import com.nichoko.domain.mapper.ConnectionMapper;
 import com.nichoko.exception.NoConnectionsFoundException;
 import com.nichoko.exception.TooManyConnectionsException;

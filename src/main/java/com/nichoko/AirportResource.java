@@ -4,11 +4,11 @@ import java.util.List;
 import org.jboss.resteasy.reactive.RestResponse;
 
 import com.nichoko.domain.dto.ConnectionDTO;
-import com.nichoko.domain.dto.ConnectionQueryDTO;
-import com.nichoko.domain.dto.ConnectionResponseDTO;
-import com.nichoko.domain.dto.RouteQueryDTO;
-import com.nichoko.domain.dto.RouteResponseDTO;
 import com.nichoko.domain.dto.graph.ConnectionsGraphDTO;
+import com.nichoko.domain.dto.query.ConnectionQueryDTO;
+import com.nichoko.domain.dto.query.RouteQueryDTO;
+import com.nichoko.domain.dto.response.ConnectionResponseDTO;
+import com.nichoko.domain.dto.response.RouteResponseDTO;
 import com.nichoko.service.interfaces.ConnectionService;
 import com.nichoko.service.interfaces.ConnectionsGraphService;
 
