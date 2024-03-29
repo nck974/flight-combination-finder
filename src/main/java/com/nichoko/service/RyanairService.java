@@ -95,7 +95,8 @@ public class RyanairService implements AirlineService {
                 LocalDateTime landingDateTime = LocalDateTime.parse(landingDateString,
                         DateTimeFormatter.ISO_LOCAL_DATE_TIME);
                 flight.setLandingDate(landingDateTime);
-                flight.setDuration(DateUtils.calculateFlightDuration(departureDateTime, landingDateTime));
+                int duration = DateUtils.calculateFlightDuration(departureDateTime, landingDateTime);
+                flight.setDuration(duration);
 
                 flights.add(flight);
             }

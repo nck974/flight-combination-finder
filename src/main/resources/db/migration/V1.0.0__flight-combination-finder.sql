@@ -7,6 +7,7 @@
         id bigint not null,
         landingDate timestamp(6),
         destination varchar(255),
+        duration bigint,
         origin varchar(255),
         createdAt timestamp default current_timestamp,
         primary key (id)
