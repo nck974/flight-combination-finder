@@ -45,6 +45,7 @@ public class FlightResource {
 
     /**
      * Main endpoints to obtain the connections of the airports
+     * 
      * @param query
      * @return
      */
@@ -57,7 +58,6 @@ public class FlightResource {
         if (!flights.isEmpty()) {
             log.info("Saving flights in the local database...");
             flights = flightService.saveFlights(flights);
-            flights = this.flightsDetailsService.setFlightsDuration(flights);
         } else {
             throw new NoFlightsFoundException();
         }
@@ -93,6 +93,7 @@ public class FlightResource {
         flight.setPrice(19.99f);
         flight.setDepartureDate(LocalDateTime.of(2024, 3, 25, 12, 47, 0));
         flight.setLandingDate(LocalDateTime.of(2024, 3, 25, 15, 47, 0));
+        flight.setDuration(4);
         flight.setId(1l);
         flight.setCreatedAt(LocalDateTime.now());
         flights.add(flight);
@@ -103,6 +104,7 @@ public class FlightResource {
         flight2.setPrice(20.99f);
         flight2.setDepartureDate(LocalDateTime.of(2024, 3, 16, 23, 47, 0));
         flight2.setLandingDate(LocalDateTime.of(2024, 3, 17, 2, 47, 0));
+        flight.setDuration(4);
         flight2.setId(1l);
         flight2.setCreatedAt(LocalDateTime.now());
         flights.add(flight2);
@@ -113,11 +115,10 @@ public class FlightResource {
         flight3.setPrice(20.99f);
         flight3.setDepartureDate(LocalDateTime.of(2024, 3, 25, 23, 47, 0));
         flight3.setLandingDate(LocalDateTime.of(2024, 3, 26, 2, 47, 0));
+        flight.setDuration(4);
         flight3.setId(1l);
         flight3.setCreatedAt(LocalDateTime.now());
         flights.add(flight3);
-
-        flights = this.flightsDetailsService.setFlightsDuration(flights);
 
         ItineraryResponseDTO itineraryResponseDTO = new ItineraryResponseDTO();
         itineraryResponseDTO.setFlights(flights);

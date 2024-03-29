@@ -1,7 +1,6 @@
 package com.nichoko.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -162,25 +161,6 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
         }
 
         return itineraryOptions;
-    }
-
-    /**
-     * Fill the duration of each flight with an integer number. This method takes
-     * into account
-     * flights that have multiple hours, also it returns always one hour
-     * 
-     * @param query
-     * @param flights
-     * @return routes
-     */
-    @Override
-    public List<FlightDTO> setFlightsDuration(List<FlightDTO> flights) {
-        for (FlightDTO flight : flights) {
-            LocalDateTime departureDateTime = flight.getDepartureDate();
-            LocalDateTime landingDateTime = flight.getLandingDate();
-            flight.setDuration(DateUtils.calculateFlightDuration(departureDateTime, landingDateTime));
-        }
-        return flights;
     }
 
 }

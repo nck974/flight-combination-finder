@@ -16,6 +16,7 @@ import com.nichoko.domain.dto.query.FlightQueryDTO;
 import com.nichoko.domain.dto.query.FlightQueryDTO.RouteCombination;
 import com.nichoko.exception.ErrorFetchingDataException;
 import com.nichoko.service.interfaces.AirlineService;
+import com.nichoko.utils.DateUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.client.Client;
@@ -86,14 +87,15 @@ public class RyanairService implements AirlineService {
                 flight.setPrice((float) price.get("value").asDouble());
 
                 String departureDateString = outbound.get("departureDate").asText();
-                LocalDateTime departureDate = LocalDateTime.parse(departureDateString,
+                LocalDateTime departureDateTime = LocalDateTime.parse(departureDateString,
                         DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                flight.setDepartureDate(departureDate);
+                flight.setDepartureDate(departureDateTime);
 
                 String landingDateString = outbound.get("arrivalDate").asText();
-                LocalDateTime landingDate = LocalDateTime.parse(landingDateString,
+                LocalDateTime landingDateTime = LocalDateTime.parse(landingDateString,
                         DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                flight.setLandingDate(landingDate);
+                flight.setLandingDate(landingDateTime);
+                flight.setDuration(DateUtils.calculateFlightDuration(departureDateTime, landingDateTime));
 
                 flights.add(flight);
             }
@@ -174,6 +176,7 @@ public class RyanairService implements AirlineService {
         for (String url : urls) {
             flights.addAll(this.sendGetFlightsQuery(url));
         }
+
         return flights;
 
     }
