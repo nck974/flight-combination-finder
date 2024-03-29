@@ -71,5 +71,11 @@ class DateUtilsTest {
                 LocalDateTime.of(2024, 3, 13, 15, 0),
                 LocalDateTime.of(2024, 3, 13, 15, 30)));
     }
+    @Test
+    void testCalculateFlightDuration__zeroMinuteLandingDate() {
+        assertEquals(1, DateUtils.calculateFlightDuration(
+                LocalDateTime.of(2024, 3, 13, 14, 0),
+                LocalDateTime.of(2024, 3, 13, 15, 0)));
+    }
 
 }
