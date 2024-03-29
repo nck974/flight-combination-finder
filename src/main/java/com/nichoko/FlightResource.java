@@ -13,7 +13,7 @@ import com.nichoko.domain.dto.response.ItineraryResponseDTO;
 import com.nichoko.exception.NoFlightsFoundException;
 import com.nichoko.service.interfaces.AirlineService;
 import com.nichoko.service.interfaces.FlightService;
-import com.nichoko.service.interfaces.FlightsDetailsService;
+import com.nichoko.service.interfaces.FlightsRouteService;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -31,16 +31,16 @@ public class FlightResource {
 
     private AirlineService airlineService;
     private FlightService flightService;
-    private FlightsDetailsService flightsDetailsService;
+    private FlightsRouteService flightsRouteService;
 
     @Inject
     FlightResource(
             AirlineService airlineService,
             FlightService flightService,
-            FlightsDetailsService flightsDetailsService) {
+            FlightsRouteService flightsRouteService) {
         this.airlineService = airlineService;
         this.flightService = flightService;
-        this.flightsDetailsService = flightsDetailsService;
+        this.flightsRouteService = flightsRouteService;
     }
 
     /**
@@ -63,7 +63,7 @@ public class FlightResource {
         }
 
         log.info("Calculating available routes...");
-        List<FlightRouteDTO> availableRoutes = this.flightsDetailsService.getItineraryOptions(query, flights);
+        List<FlightRouteDTO> availableRoutes = this.flightsRouteService.getAvailableRoutes(query, flights);
         log.info("Number of available routes found: " + availableRoutes.size());
 
         ItineraryResponseDTO itineraryResponseDTO = new ItineraryResponseDTO();
@@ -122,7 +122,7 @@ public class FlightResource {
 
         ItineraryResponseDTO itineraryResponseDTO = new ItineraryResponseDTO();
         itineraryResponseDTO.setFlights(flights);
-        itineraryResponseDTO.setAvailableRoutes(this.flightsDetailsService.getItineraryOptions(query, flights));
+        itineraryResponseDTO.setAvailableRoutes(this.flightsRouteService.getAvailableRoutes(query, flights));
 
         return RestResponse.ok(itineraryResponseDTO);
     }
