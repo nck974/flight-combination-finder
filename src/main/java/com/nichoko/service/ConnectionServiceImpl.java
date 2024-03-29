@@ -45,44 +45,6 @@ public class ConnectionServiceImpl implements ConnectionService {
         this.airlineService = airlineService;
     }
 
-    @Transactional
-    public ConnectionDTO saveConnection(ConnectionDTO connectionDTO) {
-        log.info("Saving into the database " + connectionDTO.getOrigin() + " - " + connectionDTO.getDestination()
-                + "...");
-        Connection connection = mapper.toDAO(connectionDTO);
-        log.info("Persisting into the database " + connection.origin + " - " + connection.destination + "...");
-        connectionRepository.persistAndFlush(connection);
-        return mapper.toDTO(connection);
-    }
-
-    @Transactional
-    public List<ConnectionDTO> saveConnections(List<ConnectionDTO> connections) {
-        return connections.stream().map(this::saveConnection).collect(Collectors.toList());
-    }
-
-    public List<ConnectionDTO> listSavedConnections() {
-        return connectionRepository.listAll()
-                .stream()
-                .map(connection -> mapper.toDTO(connection))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Returns all the possible connections for a given airport and saves them in
-     * the database
-     * 
-     * @param query
-     * @return
-     */
-    public List<ConnectionDTO> getConnectionsForAirport(ConnectionQueryDTO query) {
-        List<ConnectionDTO> connections = airlineService.getAirportConnections(query);
-        if (!connections.isEmpty()) {
-            log.info("Saving to the database connections of: " + query.getOrigin() + "...");
-            return this.saveConnections(connections);
-        }
-        throw new NoConnectionsFoundException();
-    }
-
     /**
      * Search all connections for a given airport. If they already exist in the
      * cached map do not
@@ -101,8 +63,7 @@ public class ConnectionServiceImpl implements ConnectionService {
             ConnectionQueryDTO connectionQuery = new ConnectionQueryDTO(originAirport);
             connectionsForLevel = airlineService.getAirportConnections(connectionQuery);
             if (!connectionsForLevel.isEmpty()) {
-                log.debug(
-                        "Saving to the database connections of: " + originAirport + "...");
+                log.debug("Saving to the database connections of: " + originAirport + "...");
                 connectionsForLevel = this.saveConnections(connectionsForLevel);
             }
             seenAirports.put(originAirport, connectionsForLevel);
@@ -140,7 +101,7 @@ public class ConnectionServiceImpl implements ConnectionService {
      */
     private String getOriginAirport(RouteQueryDTO query, int currentLevel, List<ConnectionDTO> currentRoute) {
         String originAirport;
-        log.info("Current level is: " + currentLevel);
+        log.debug("Current level is: " + currentLevel);
         if (currentLevel > 1) {
             ConnectionDTO currentConnection = currentRoute.get(currentRoute.size() - 1);
             originAirport = currentConnection.getDestination();
@@ -148,6 +109,44 @@ public class ConnectionServiceImpl implements ConnectionService {
             originAirport = query.getOrigin();
         }
         return originAirport;
+    }
+
+    @Transactional
+    public ConnectionDTO saveConnection(ConnectionDTO connectionDTO) {
+        log.debug("Saving into the database " + connectionDTO.getOrigin() + " - " + connectionDTO.getDestination()
+                + "...");
+        Connection connection = mapper.toDAO(connectionDTO);
+        log.debug("Persisting into the database " + connection.origin + " - " + connection.destination + "...");
+        connectionRepository.persistAndFlush(connection);
+        return mapper.toDTO(connection);
+    }
+
+    @Transactional
+    public List<ConnectionDTO> saveConnections(List<ConnectionDTO> connections) {
+        return connections.stream().map(this::saveConnection).collect(Collectors.toList());
+    }
+
+    public List<ConnectionDTO> listSavedConnections() {
+        return connectionRepository.listAll()
+                .stream()
+                .map(connection -> mapper.toDTO(connection))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns all the possible connections for a given airport and saves them in
+     * the database
+     * 
+     * @param query
+     * @return
+     */
+    public List<ConnectionDTO> getConnectionsForAirport(ConnectionQueryDTO query) {
+        List<ConnectionDTO> connections = airlineService.getAirportConnections(query);
+        if (!connections.isEmpty()) {
+            log.info("Saving to the database connections of: " + query.getOrigin() + "...");
+            return this.saveConnections(connections);
+        }
+        throw new NoConnectionsFoundException();
     }
 
     /**

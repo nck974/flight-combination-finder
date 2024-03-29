@@ -10,7 +10,7 @@ import com.nichoko.exception.InvalidDateException;
 public class DateUtils {
 
     DateUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new IllegalStateException("Utility class should not be instantiated");
     }
 
     public static List<LocalDate> getDatesRange(LocalDate startDate, LocalDate endDate) {

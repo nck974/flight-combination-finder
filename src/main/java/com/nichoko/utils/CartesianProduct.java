@@ -6,7 +6,7 @@ import java.util.List;
 public class CartesianProduct {
 
     CartesianProduct() {
-        throw new IllegalStateException("Utility class");
+        throw new IllegalStateException("Utility class should not be instantiated");
     }
 
     /**
