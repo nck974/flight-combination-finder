@@ -31,6 +31,44 @@ public class ConnectionsGraphServiceImpl implements ConnectionsGraphService {
         this.airportService = airportService;
     }
 
+    private Long buildAirportNodes(List<ConnectionsGraphNodeDTO> nodes,
+            List<ConnectionsGraphCategoryDTO> categories,
+            Long idCounter,
+            Map<String, Long> airportIdMapping,
+            List<String> airports) {
+        for (String airport : airports) {
+            if (airportIdMapping.containsKey(airport)) {
+                continue;
+            }
+            airportIdMapping.put(airport, idCounter);
+
+            // Graph node
+            ConnectionsGraphNodeDTO node = buildAirportNode(idCounter, airport);
+
+            nodes.add(node);
+            categories.add(new ConnectionsGraphCategoryDTO(airport));
+
+            idCounter++;
+        }
+        return idCounter;
+    }
+
+    private ConnectionsGraphNodeDTO buildAirportNode(Long idCounter, String originAirport) {
+
+        AirportDTO airport = airportService.getAirport(originAirport);
+
+        ConnectionsGraphNodeDTO node = new ConnectionsGraphNodeDTO();
+        node.setId(idCounter);
+        node.setName(originAirport);
+        node.setCompleteName(airport.getName());
+        node.setCategory(idCounter);
+        node.setSymbolSize(30.0f);
+        node.setValue(50.0f);
+        node.setX(airport.getLonDecimal());
+        node.setY(airport.getLatDecimal());
+        return node;
+    }
+
     @Override
     @CacheResult(cacheName = "routesGraph")
     public ConnectionsGraphDTO getRoutesGraph(List<List<ConnectionDTO>> routes) {
@@ -71,7 +109,7 @@ public class ConnectionsGraphServiceImpl implements ConnectionsGraphService {
                 routeUrlBuilder.append("destination=");
                 routeUrlBuilder.append(connection.getDestination());
 
-                if (connection != route.get(route.size() - 1)){
+                if (connection != route.get(route.size() - 1)) {
                     routeUrlBuilder.append("&");
                 }
 
@@ -82,7 +120,7 @@ public class ConnectionsGraphServiceImpl implements ConnectionsGraphService {
                 routeLinks.add(link);
 
             }
-            
+
             // Set route parameters in each link
             String routeName = routeNameBuilder.toString();
             String routeUrl = routeUrlBuilder.toString();
@@ -101,44 +139,6 @@ public class ConnectionsGraphServiceImpl implements ConnectionsGraphService {
         graph.setLinks(links);
 
         return graph;
-    }
-
-    private Long buildAirportNodes(List<ConnectionsGraphNodeDTO> nodes,
-            List<ConnectionsGraphCategoryDTO> categories,
-            Long idCounter,
-            Map<String, Long> airportIdMapping,
-            List<String> airports) {
-        for (String airport : airports) {
-            if (airportIdMapping.containsKey(airport)) {
-                continue;
-            }
-            airportIdMapping.put(airport, idCounter);
-
-            // Graph node
-            ConnectionsGraphNodeDTO node = buildAirportNode(idCounter, airport);
-
-            nodes.add(node);
-            categories.add(new ConnectionsGraphCategoryDTO(airport));
-
-            idCounter++;
-        }
-        return idCounter;
-    }
-
-    private ConnectionsGraphNodeDTO buildAirportNode(Long idCounter, String originAirport) {
-
-        AirportDTO airport = airportService.getAirport(originAirport);
-
-        ConnectionsGraphNodeDTO node = new ConnectionsGraphNodeDTO();
-        node.setId(idCounter);
-        node.setName(originAirport);
-        node.setCompleteName(airport.getName());
-        node.setCategory(idCounter);
-        node.setSymbolSize(30.0f);
-        node.setValue(50.0f);
-        node.setX(airport.getLonDecimal());
-        node.setY(airport.getLatDecimal());
-        return node;
     }
 
 }

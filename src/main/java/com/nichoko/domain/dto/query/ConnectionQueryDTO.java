@@ -1,4 +1,4 @@
-package com.nichoko.domain.dto;
+package com.nichoko.domain.dto.query;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.nichoko.exception.InvalidDateException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @QuarkusTest
@@ -48,6 +49,33 @@ class DateUtilsTest {
         assertThrows(IllegalStateException.class, () -> {
             new DateUtils();
         });
+    }
+
+    @Test
+    void testCalculateFlightDuration__normal() {
+        assertEquals(3, DateUtils.calculateFlightDuration(
+                LocalDateTime.of(2024, 3, 13, 10, 0),
+                LocalDateTime.of(2024, 3, 13, 12, 30)));
+    }
+
+    @Test
+    void testCalculateFlightDuration__twoDays() {
+        assertEquals(11, DateUtils.calculateFlightDuration(
+                LocalDateTime.of(2024, 3, 13, 15, 0),
+                LocalDateTime.of(2024, 3, 14, 1, 30)));
+    }
+
+    @Test
+    void testCalculateFlightDuration__sameHour() {
+        assertEquals(1, DateUtils.calculateFlightDuration(
+                LocalDateTime.of(2024, 3, 13, 15, 0),
+                LocalDateTime.of(2024, 3, 13, 15, 30)));
+    }
+    @Test
+    void testCalculateFlightDuration__zeroMinuteLandingDate() {
+        assertEquals(1, DateUtils.calculateFlightDuration(
+                LocalDateTime.of(2024, 3, 13, 14, 0),
+                LocalDateTime.of(2024, 3, 13, 15, 0)));
     }
 
 }

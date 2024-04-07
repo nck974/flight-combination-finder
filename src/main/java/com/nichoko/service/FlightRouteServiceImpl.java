@@ -1,24 +1,23 @@
 package com.nichoko.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.nichoko.domain.dto.FlightDTO;
-import com.nichoko.domain.dto.FlightQueryDTO;
 import com.nichoko.domain.dto.FlightRouteDTO;
-import com.nichoko.domain.dto.FlightQueryDTO.RouteCombination;
-import com.nichoko.service.interfaces.FlightsDetailsService;
+import com.nichoko.domain.dto.query.FlightQueryDTO;
+import com.nichoko.domain.dto.query.FlightQueryDTO.RouteCombination;
+import com.nichoko.service.interfaces.FlightsRouteService;
 import com.nichoko.utils.CartesianProduct;
 import com.nichoko.utils.DateUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class FlightDetailsServiceImpl implements FlightsDetailsService {
+public class FlightRouteServiceImpl implements FlightsRouteService {
 
     /**
      * Structure the data in a map organized by date and route to have quick access
@@ -113,17 +112,15 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
 
     /**
      * For each day in the range of the query check if there is a possible
-     * combination of all flights
-     * that would allow to get from the origin to the destination going through all
-     * routes without
-     * overlapping the flight times
+     * combination of all flights that would allow to get from the origin to the
+     * destination going through all routes without overlapping the flight times
      * 
      * @param query
      * @param flights
      * @return routes
      */
     @Override
-    public List<FlightRouteDTO> getItineraryOptions(FlightQueryDTO query, List<FlightDTO> flights) {
+    public List<FlightRouteDTO> getAvailableRoutes(FlightQueryDTO query, List<FlightDTO> flights) {
 
         List<FlightRouteDTO> itineraryOptions = new ArrayList<>();
 
@@ -162,25 +159,6 @@ public class FlightDetailsServiceImpl implements FlightsDetailsService {
         }
 
         return itineraryOptions;
-    }
-
-    /**
-     * Fill the duration of each flight with an integer number. This method takes
-     * into account
-     * flights that have multiple hours, also it returns always one hour
-     * 
-     * @param query
-     * @param flights
-     * @return routes
-     */
-    @Override
-    public List<FlightDTO> setFlightsDuration(List<FlightDTO> flights) {
-        for (FlightDTO flight : flights) {
-            LocalDateTime departureDateTime = flight.getDepartureDate();
-            LocalDateTime landingDateTime = flight.getLandingDate();
-            flight.setDuration(DateUtils.calculateFlightDuration(departureDateTime, landingDateTime));
-        }
-        return flights;
     }
 
 }

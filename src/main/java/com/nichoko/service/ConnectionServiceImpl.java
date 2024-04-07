@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 import com.nichoko.domain.dao.Connection;
 import com.nichoko.domain.dto.ConnectionDTO;
-import com.nichoko.domain.dto.ConnectionQueryDTO;
-import com.nichoko.domain.dto.RouteQueryDTO;
+import com.nichoko.domain.dto.query.ConnectionQueryDTO;
+import com.nichoko.domain.dto.query.RouteQueryDTO;
 import com.nichoko.domain.mapper.ConnectionMapper;
 import com.nichoko.exception.NoConnectionsFoundException;
 import com.nichoko.exception.TooManyConnectionsException;
@@ -45,12 +45,78 @@ public class ConnectionServiceImpl implements ConnectionService {
         this.airlineService = airlineService;
     }
 
+    /**
+     * Search all connections for a given airport. If they already exist in the
+     * cached map do not
+     * make the query
+     * 
+     * @param seenAirports
+     * @param originAirport
+     * @return
+     */
+    private List<ConnectionDTO> getConnectionsForAirport(Map<String, List<ConnectionDTO>> seenAirports,
+            String originAirport) {
+        List<ConnectionDTO> connectionsForLevel;
+        if (seenAirports.containsKey(originAirport)) {
+            connectionsForLevel = seenAirports.get(originAirport);
+        } else {
+            ConnectionQueryDTO connectionQuery = new ConnectionQueryDTO(originAirport);
+            connectionsForLevel = airlineService.getAirportConnections(connectionQuery);
+            if (!connectionsForLevel.isEmpty()) {
+                log.debug("Saving to the database connections of: " + originAirport + "...");
+                connectionsForLevel = this.saveConnections(connectionsForLevel);
+            }
+            seenAirports.put(originAirport, connectionsForLevel);
+        }
+        return connectionsForLevel;
+    }
+
+    /**
+     * Check the number of connections to avoid an exponential grow of the queries
+     * sent to the
+     * airline API
+     * 
+     * @param query
+     */
+    private void validateRouteQuery(RouteQueryDTO query) {
+        if (query.getMaxNrConnections() > MAX_NR_CONNECTIONS) {
+            throw new TooManyConnectionsException();
+        }
+
+        if (query.getMaxNrConnections() == 0) {
+            query.setMaxNrConnections(MAX_NR_CONNECTIONS);
+        }
+    }
+
+    /**
+     * Return the airport from which the connections will be searched. If it is the
+     * first one it
+     * will be the one of the query, otherwise it will be the last destination of
+     * the current route
+     * 
+     * @param query
+     * @param currentLevel
+     * @param currentRoute
+     * @return
+     */
+    private String getOriginAirport(RouteQueryDTO query, int currentLevel, List<ConnectionDTO> currentRoute) {
+        String originAirport;
+        log.debug("Current level is: " + currentLevel);
+        if (currentLevel > 1) {
+            ConnectionDTO currentConnection = currentRoute.get(currentRoute.size() - 1);
+            originAirport = currentConnection.getDestination();
+        } else {
+            originAirport = query.getOrigin();
+        }
+        return originAirport;
+    }
+
     @Transactional
     public ConnectionDTO saveConnection(ConnectionDTO connectionDTO) {
-        log.info("Saving into the database " + connectionDTO.getOrigin() + " - " + connectionDTO.getDestination()
+        log.debug("Saving into the database " + connectionDTO.getOrigin() + " - " + connectionDTO.getDestination()
                 + "...");
         Connection connection = mapper.toDAO(connectionDTO);
-        log.info("Persisting into the database " + connection.origin + " - " + connection.destination + "...");
+        log.debug("Persisting into the database " + connection.origin + " - " + connection.destination + "...");
         connectionRepository.persistAndFlush(connection);
         return mapper.toDTO(connection);
     }
@@ -80,74 +146,7 @@ public class ConnectionServiceImpl implements ConnectionService {
             log.info("Saving to the database connections of: " + query.getOrigin() + "...");
             return this.saveConnections(connections);
         }
-        throw new NoConnectionsFoundException("No connections could be found.", 4000);
-    }
-
-    /**
-     * Search all connections for a given airport. If they already exist in the
-     * cached map do not
-     * make the query
-     * 
-     * @param seenAirports
-     * @param originAirport
-     * @return
-     */
-    private List<ConnectionDTO> getConnectionsForAirport(Map<String, List<ConnectionDTO>> seenAirports,
-            String originAirport) {
-        List<ConnectionDTO> connectionsForLevel;
-        if (seenAirports.containsKey(originAirport)) {
-            connectionsForLevel = seenAirports.get(originAirport);
-        } else {
-            ConnectionQueryDTO connectionQuery = new ConnectionQueryDTO(originAirport);
-            connectionsForLevel = airlineService.getAirportConnections(connectionQuery);
-            if (!connectionsForLevel.isEmpty()) {
-                log.debug(
-                        "Saving to the database connections of: " + originAirport + "...");
-                connectionsForLevel = this.saveConnections(connectionsForLevel);
-            }
-            seenAirports.put(originAirport, connectionsForLevel);
-        }
-        return connectionsForLevel;
-    }
-
-    /**
-     * Check the number of connections to avoid an exponential grow of the queries
-     * sent to the
-     * airline API
-     * 
-     * @param query
-     */
-    private void validateRouteQuery(RouteQueryDTO query) {
-        if (query.getMaxNrConnections() > MAX_NR_CONNECTIONS) {
-            throw new TooManyConnectionsException("It is not possible to search more than 3 connections", 40002);
-        }
-
-        if (query.getMaxNrConnections() == 0) {
-            query.setMaxNrConnections(MAX_NR_CONNECTIONS);
-        }
-    }
-
-    /**
-     * Return the airport from which the connections will be searched. If it is the
-     * first one it
-     * will be the one of the query, otherwise it will be the last destination of
-     * the current route
-     * 
-     * @param query
-     * @param currentLevel
-     * @param currentRoute
-     * @return
-     */
-    private String getOriginAirport(RouteQueryDTO query, int currentLevel, List<ConnectionDTO> currentRoute) {
-        String originAirport;
-        log.info("Current level is: " + currentLevel);
-        if (currentLevel > 1) {
-            ConnectionDTO currentConnection = currentRoute.get(currentRoute.size() - 1);
-            originAirport = currentConnection.getDestination();
-        } else {
-            originAirport = query.getOrigin();
-        }
-        return originAirport;
+        throw new NoConnectionsFoundException();
     }
 
     /**
@@ -199,7 +198,7 @@ public class ConnectionServiceImpl implements ConnectionService {
         }
 
         if (routes.isEmpty()) {
-            throw new NoConnectionsFoundException("No routes could be found.", 4004);
+            throw new NoConnectionsFoundException();
         }
 
         return routes;

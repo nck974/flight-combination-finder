@@ -1,15 +1,8 @@
 package com.nichoko.exception;
 
-import lombok.Getter;
+public class NoConnectionsFoundException extends DefaultException {
 
-@Getter()
-public class NoConnectionsFoundException extends RuntimeException {
-    private final int code;
-    private final String message;
-
-    public NoConnectionsFoundException(String message, int code) {
-        super(message);
-        this.code = code;
-        this.message = message;
+    public NoConnectionsFoundException() {
+        super(4041, "No connections could be found.");
     }
 }

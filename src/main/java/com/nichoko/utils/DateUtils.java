@@ -10,12 +10,12 @@ import com.nichoko.exception.InvalidDateException;
 public class DateUtils {
 
     DateUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new IllegalStateException("Utility class should not be instantiated");
     }
 
     public static List<LocalDate> getDatesRange(LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
-            throw new InvalidDateException("End date is before the start date", 1000);
+            throw new InvalidDateException();
         }
 
         List<LocalDate> dates = new ArrayList<>();

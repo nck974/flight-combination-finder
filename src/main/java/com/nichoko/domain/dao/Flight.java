@@ -13,6 +13,7 @@ public class Flight extends PanacheEntity {
     public String origin;
     public String destination;
     public Float price;
+    public int duration;
     public LocalDateTime departureDate;
     public LocalDateTime landingDate;
 
