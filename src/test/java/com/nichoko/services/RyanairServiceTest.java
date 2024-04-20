@@ -14,7 +14,7 @@ import com.nichoko.domain.dto.query.ConnectionQueryDTO;
 import com.nichoko.domain.dto.query.FlightQueryDTO;
 import com.nichoko.domain.dto.query.FlightQueryDTO.RouteCombination;
 import com.nichoko.exception.ErrorFetchingDataException;
-import com.nichoko.service.interfaces.AirlineService;
+import com.nichoko.service.RyanairService;
 import com.nichoko.mock.WireMockRyanair;
 
 import io.quarkus.test.common.QuarkusTestResource;
@@ -26,7 +26,7 @@ import jakarta.inject.Inject;
 class RyanairServiceTest {
 
     @Inject
-    private AirlineService airlineService;
+    private RyanairService ryanairService;
 
     private FlightQueryDTO getMockQueryTwoConnections() {
         FlightQueryDTO queryDTO = new FlightQueryDTO();
@@ -52,7 +52,7 @@ class RyanairServiceTest {
     @Test
     void testGetCompanyFlights_withMultipleUrls() throws Exception {
         FlightQueryDTO query = this.getMockQueryTwoConnections();
-        List<FlightDTO> flights = airlineService.getCompanyFlights(query);
+        List<FlightDTO> flights = ryanairService.getCompanyFlights(query);
 
         assertEquals(4, flights.size());
     }
@@ -60,7 +60,7 @@ class RyanairServiceTest {
     @Test
     void testGetCompanyFlights_withOneUrl() throws Exception {
         FlightQueryDTO query = this.getMockQueryOneConnection();
-        List<FlightDTO> flights = airlineService.getCompanyFlights(query);
+        List<FlightDTO> flights = ryanairService.getCompanyFlights(query);
 
         assertEquals(2, flights.size());
     }
@@ -69,7 +69,7 @@ class RyanairServiceTest {
     void testGetCompanyAirportConnections__success() throws Exception {
         ConnectionQueryDTO query = new ConnectionQueryDTO();
         query.setOrigin("STD");
-        List<ConnectionDTO> connections = airlineService.getAirportConnections(query);
+        List<ConnectionDTO> connections = ryanairService.getAirportConnections(query);
 
         assertEquals(2, connections.size());
     }
@@ -79,7 +79,7 @@ class RyanairServiceTest {
         ConnectionQueryDTO query = new ConnectionQueryDTO();
         query.setOrigin("WRN");
         assertThrows(ErrorFetchingDataException.class, () -> {
-            airlineService.getAirportConnections(query);
+            ryanairService.getAirportConnections(query);
         });
 
     }
