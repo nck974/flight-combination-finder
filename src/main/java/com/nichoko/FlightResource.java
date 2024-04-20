@@ -15,6 +15,7 @@ import com.nichoko.service.interfaces.AirlineService;
 import com.nichoko.service.interfaces.FlightService;
 import com.nichoko.service.interfaces.FlightsRouteService;
 
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -29,16 +30,16 @@ import lombok.extern.jbosslog.JBossLog;
 @JBossLog
 public class FlightResource {
 
-    private AirlineService airlineService;
+    private Instance<AirlineService> airlineServices;
     private FlightService flightService;
     private FlightsRouteService flightsRouteService;
 
     @Inject
     FlightResource(
-            AirlineService airlineService,
+            Instance<AirlineService> airlineServices,
             FlightService flightService,
             FlightsRouteService flightsRouteService) {
-        this.airlineService = airlineService;
+        this.airlineServices = airlineServices;
         this.flightService = flightService;
         this.flightsRouteService = flightsRouteService;
     }
@@ -51,14 +52,22 @@ public class FlightResource {
      */
     @POST
     public RestResponse<ItineraryResponseDTO> getAllFlights(FlightQueryDTO query) {
-        log.info("Checking flights for route:\n" + query.getRoutesCombinations());
-        List<FlightDTO> flights = airlineService.getCompanyFlights(query);
-        log.info("Number of flights found in the route: " + flights.size());
+        List<FlightDTO> flights = new ArrayList<>();
+        for (AirlineService airlineService : this.airlineServices) {
+            log.info("Checking " + airlineService.getAirlineName() + " flights for route:\n"
+                    + query.getRoutesCombinations());
+            List<FlightDTO> airlineFlights = airlineService.getCompanyFlights(query);
+            log.info("Number of flights found in the route: " + airlineFlights.size());
 
-        if (!flights.isEmpty()) {
+            if (airlineFlights.isEmpty()) {
+                continue;
+            }
             log.info("Saving flights in the local database...");
-            flights = flightService.saveFlights(flights);
-        } else {
+            airlineFlights = flightService.saveFlights(airlineFlights);
+            flights.addAll(airlineFlights);
+        }
+
+        if (flights.isEmpty()) {
             throw new NoFlightsFoundException();
         }
 

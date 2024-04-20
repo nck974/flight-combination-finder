@@ -10,4 +10,5 @@ import com.nichoko.domain.dto.query.FlightQueryDTO;
 public interface AirlineService {
     List<FlightDTO> getCompanyFlights(FlightQueryDTO query);
     List<ConnectionDTO> getAirportConnections(ConnectionQueryDTO query);
+    String getAirlineName();
 }

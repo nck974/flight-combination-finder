@@ -33,6 +33,8 @@ import io.quarkus.cache.CacheResult;
 @JBossLog
 public class RyanairService implements AirlineService {
 
+    static final String AIRLINE_NAME = "RYANAIR";
+
     @RestClient
     @Inject
     private RyanairQueryService ryanairQueryService;
@@ -144,7 +146,7 @@ public class RyanairService implements AirlineService {
 
     private List<ConnectionDTO> sendGetConnectionsQuery(String iataCode, ConnectionQueryDTO query) {
 
-        List<ConnectionDTO> flights;
+        List<ConnectionDTO> connections;
         Response response;
         try {
             response = ryanairQueryService.getAirportConnections(iataCode);
@@ -152,13 +154,13 @@ public class RyanairService implements AirlineService {
             throw new ErrorFetchingDataException();
         }
 
-        flights = toConnectionDTO(response, query);
+        connections = toConnectionDTO(response, query);
 
-        return flights;
+        return connections;
     }
 
     @Override
-    @CacheResult(cacheName = "flightsForDate")
+    @CacheResult(cacheName = "flightsForDateRyanair")
     public List<FlightDTO> getCompanyFlights(FlightQueryDTO query) {
         List<Map<String, String>> parametersSet = buildGetCompanyFlightsParameters(query);
 
@@ -177,4 +179,8 @@ public class RyanairService implements AirlineService {
         return this.sendGetConnectionsQuery(query.getOrigin(), query);
     }
 
+    @Override
+    public String getAirlineName() {
+        return RyanairService.AIRLINE_NAME;
+    }
 }

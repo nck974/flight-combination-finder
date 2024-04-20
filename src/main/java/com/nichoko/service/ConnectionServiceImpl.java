@@ -21,6 +21,7 @@ import com.nichoko.service.interfaces.ConnectionService;
 
 import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lombok.extern.jbosslog.JBossLog;
@@ -33,16 +34,16 @@ public class ConnectionServiceImpl implements ConnectionService {
 
     ConnectionMapper mapper;
     private ConnectionRepository connectionRepository;
-    private AirlineService airlineService;
+    private Instance<AirlineService> airlineServices;
 
     @Inject
     ConnectionServiceImpl(
             ConnectionMapper mapper,
             ConnectionRepository connectionRepository,
-            AirlineService airlineService) {
+            Instance<AirlineService> airlineServices) {
         this.mapper = mapper;
         this.connectionRepository = connectionRepository;
-        this.airlineService = airlineService;
+        this.airlineServices = airlineServices;
     }
 
     /**
@@ -61,7 +62,12 @@ public class ConnectionServiceImpl implements ConnectionService {
             connectionsForLevel = seenAirports.get(originAirport);
         } else {
             ConnectionQueryDTO connectionQuery = new ConnectionQueryDTO(originAirport);
-            connectionsForLevel = airlineService.getAirportConnections(connectionQuery);
+            
+            connectionsForLevel = new ArrayList<>();
+            for (AirlineService airlineService : airlineServices) {
+                connectionsForLevel.addAll(airlineService.getAirportConnections(connectionQuery));
+            }
+
             if (!connectionsForLevel.isEmpty()) {
                 log.debug("Saving to the database connections of: " + originAirport + "...");
                 connectionsForLevel = this.saveConnections(connectionsForLevel);
@@ -141,7 +147,11 @@ public class ConnectionServiceImpl implements ConnectionService {
      * @return
      */
     public List<ConnectionDTO> getConnectionsForAirport(ConnectionQueryDTO query) {
-        List<ConnectionDTO> connections = airlineService.getAirportConnections(query);
+        List<ConnectionDTO> connections = new ArrayList<>();
+        airlineServices.forEach(airlineService -> {
+            List<ConnectionDTO> airlineConnections = airlineService.getAirportConnections(query);
+            connections.addAll(airlineConnections);
+        });
         if (!connections.isEmpty()) {
             log.info("Saving to the database connections of: " + query.getOrigin() + "...");
             return this.saveConnections(connections);
