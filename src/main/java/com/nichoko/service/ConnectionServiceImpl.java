@@ -62,9 +62,12 @@ public class ConnectionServiceImpl implements ConnectionService {
             connectionsForLevel = seenAirports.get(originAirport);
         } else {
             ConnectionQueryDTO connectionQuery = new ConnectionQueryDTO(originAirport);
-            
+
             connectionsForLevel = new ArrayList<>();
             for (AirlineService airlineService : airlineServices) {
+                log.info("Searching connections of " + connectionQuery.getOrigin() + " for airline: "
+                        + airlineService.getAirlineName() + "...");
+
                 connectionsForLevel.addAll(airlineService.getAirportConnections(connectionQuery));
             }
 
@@ -148,12 +151,29 @@ public class ConnectionServiceImpl implements ConnectionService {
      */
     public List<ConnectionDTO> getConnectionsForAirport(ConnectionQueryDTO query) {
         List<ConnectionDTO> connections = new ArrayList<>();
+        List<String> seenAirports = new ArrayList<>();
         airlineServices.forEach(airlineService -> {
+
+            log.info("Searching connections of " + query.getOrigin() + " for airline: "
+                    + airlineService.getAirlineName() + "...");
+
             List<ConnectionDTO> airlineConnections = airlineService.getAirportConnections(query);
-            connections.addAll(airlineConnections);
+
+            log.info("Number of connections found for airline " + airlineService.getAirlineName()
+                    + ": " + airlineConnections.size());
+
+            // Check for duplicates
+            for (ConnectionDTO airlineConnection : airlineConnections) {
+                String destination = airlineConnection.getDestination();
+                if (seenAirports.contains(destination)) {
+                    continue;
+                }
+                seenAirports.add(destination);
+                connections.add(airlineConnection);
+            }
         });
         if (!connections.isEmpty()) {
-            log.info("Saving to the database connections of: " + query.getOrigin() + "...");
+            log.info("Saving to the database all connections of: " + query.getOrigin() + "...");
             return this.saveConnections(connections);
         }
         throw new NoConnectionsFoundException();

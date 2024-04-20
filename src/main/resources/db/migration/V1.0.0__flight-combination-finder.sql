@@ -9,6 +9,7 @@
         destination varchar(255),
         duration bigint,
         origin varchar(255),
+        airlineName varchar(255),
         createdAt timestamp default current_timestamp,
         primary key (id)
     );

@@ -96,15 +96,15 @@ public class RyanairService implements AirlineService {
                 int duration = DateUtils.calculateFlightDuration(departureDateTime, landingDateTime);
                 flight.setDuration(duration);
 
+                flight.setAirlineName(AIRLINE_NAME);
+
                 flights.add(flight);
             }
         } else {
-            throw new ErrorFetchingDataException();
+            throw new ErrorFetchingDataException(new RuntimeException("Unexpected content"));
         }
 
-        flights.sort(Comparator.comparing(FlightDTO::getDepartureDate));
         return flights;
-
     }
 
     private List<ConnectionDTO> toConnectionDTO(Response response, ConnectionQueryDTO query) {
@@ -120,7 +120,7 @@ public class RyanairService implements AirlineService {
                 connections.add(connection);
             }
         } else {
-            throw new ErrorFetchingDataException();
+            throw new ErrorFetchingDataException(new RuntimeException("Unexpected content"));
         }
 
         connections.sort(Comparator.comparing(ConnectionDTO::getDestination));
@@ -136,7 +136,7 @@ public class RyanairService implements AirlineService {
         try {
             response = ryanairQueryService.getFlightsForDate(parameters);
         } catch (ClientWebApplicationException exception) {
-            throw new ErrorFetchingDataException();
+            throw new ErrorFetchingDataException(exception);
         }
 
         flights = toFlightDTO(response);
@@ -151,7 +151,7 @@ public class RyanairService implements AirlineService {
         try {
             response = ryanairQueryService.getAirportConnections(iataCode);
         } catch (ClientWebApplicationException exception) {
-            throw new ErrorFetchingDataException();
+            throw new ErrorFetchingDataException(exception);
         }
 
         connections = toConnectionDTO(response, query);
@@ -174,7 +174,7 @@ public class RyanairService implements AirlineService {
     }
 
     @Override
-    @CacheResult(cacheName = "airportConnection")
+    @CacheResult(cacheName = "airportConnectionRyanair")
     public List<ConnectionDTO> getAirportConnections(ConnectionQueryDTO query) {
         return this.sendGetConnectionsQuery(query.getOrigin(), query);
     }

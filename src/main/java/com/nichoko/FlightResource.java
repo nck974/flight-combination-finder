@@ -2,6 +2,7 @@ package com.nichoko;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.jboss.resteasy.reactive.RestResponse;
@@ -70,6 +71,8 @@ public class FlightResource {
         if (flights.isEmpty()) {
             throw new NoFlightsFoundException();
         }
+
+        flights.sort(Comparator.comparing(FlightDTO::getDepartureDate));
 
         log.info("Calculating available routes...");
         List<FlightRouteDTO> availableRoutes = this.flightsRouteService.getAvailableRoutes(query, flights);

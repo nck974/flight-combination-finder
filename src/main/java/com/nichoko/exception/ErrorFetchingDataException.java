@@ -1,8 +1,13 @@
 package com.nichoko.exception;
 
-public class ErrorFetchingDataException extends DefaultException {
+import lombok.Getter;
 
-    public ErrorFetchingDataException() {
+@Getter
+public class ErrorFetchingDataException extends DefaultException {
+    final Throwable originalException;
+
+    public ErrorFetchingDataException(Throwable e) {
         super(5001, "No flights found");
+        this.originalException = e;
     }
 }

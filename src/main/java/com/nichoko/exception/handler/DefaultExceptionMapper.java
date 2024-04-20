@@ -13,8 +13,10 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import lombok.extern.jbosslog.JBossLog;
 
 @Provider
+@JBossLog
 public class DefaultExceptionMapper implements ExceptionMapper<DefaultException> {
 
     @Override
@@ -25,6 +27,11 @@ public class DefaultExceptionMapper implements ExceptionMapper<DefaultException>
         Status status = Status.NOT_IMPLEMENTED;
 
         if (exception instanceof ErrorFetchingDataException) {
+
+            Throwable originalException = ((ErrorFetchingDataException) exception).getOriginalException();
+            log.error(originalException.getMessage());
+            originalException.printStackTrace();
+
             status = Status.INTERNAL_SERVER_ERROR;
         } else if (exception instanceof InvalidDateException || exception instanceof TooManyConnectionsException) {
             status = Status.BAD_REQUEST;

@@ -18,4 +18,5 @@ public class FlightDTO {
     LocalDateTime departureDate;
     LocalDateTime landingDate;
     LocalDateTime createdAt;
+    String airlineName;
 }

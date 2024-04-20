@@ -16,6 +16,7 @@ public class Flight extends PanacheEntity {
     public int duration;
     public LocalDateTime departureDate;
     public LocalDateTime landingDate;
+    public String airlineName;
 
     @UpdateTimestamp
     public LocalDateTime createdAt;

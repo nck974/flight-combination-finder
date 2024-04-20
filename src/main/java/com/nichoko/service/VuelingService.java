@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
@@ -52,7 +53,7 @@ public class VuelingService implements AirlineService {
             urlParameters.put("year", Integer.toString(query.getStartDate().getYear()));
             urlParameters.put("month", Integer.toString(query.getStartDate().getMonthValue()));
             urlParameters.put("monthsRange", Integer
-                    .toString(query.getStartDate().getMonthValue() - query.getEndDate().getMonthValue()));
+                    .toString(query.getEndDate().getMonthValue() - query.getStartDate().getMonthValue()));
 
             parameters.add(urlParameters);
         }
@@ -66,7 +67,7 @@ public class VuelingService implements AirlineService {
         for (RouteCombination route : query.getRoutes()) {
 
             // It seems this works different than the other method. A +1 is needed
-            int monthRange = query.getStartDate().getMonthValue() - query.getEndDate().getMonthValue() + 1;
+            int monthRange = query.getEndDate().getMonthValue() - query.getStartDate().getMonthValue() + 1;
 
             Map<String, String> urlParameters = new HashMap<>();
             urlParameters.put("departure", route.getOrigin());
@@ -88,6 +89,39 @@ public class VuelingService implements AirlineService {
                 .toFormatter();
     }
 
+    /**
+     * Landing Date form the response has the hour set to 0, therefore the
+     * additional query is used
+     * to get the flights
+     * 
+     * @param flightLandingDates
+     * @param dateFormatter
+     * @param flightResponse
+     * @param departureDateTime
+     * @return
+     */
+    private LocalDateTime extractLandingDate(Map<String, LocalDateTime> flightLandingDates,
+            DateTimeFormatter dateFormatter, JsonNode flightResponse, LocalDateTime departureDateTime) {
+        String flightNumber = flightResponse.get("FlightID").asText();
+
+        LocalDateTime landingDateTime;
+        String landingDateString = flightResponse.get("ArrivalDate").asText();
+        landingDateTime = LocalDateTime.parse(landingDateString, dateFormatter);
+
+        String landingDateKey = landingDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyy"))
+                + flightNumber;
+        if (flightLandingDates.containsKey(landingDateKey)) {
+            landingDateTime = flightLandingDates.get(landingDateKey);
+
+            // If a flight lands after 12 add that day because it can not be read form the
+            // times schedule response
+            if (landingDateTime.isBefore(departureDateTime)) {
+                landingDateTime = landingDateTime.plusDays(1);
+            }
+        }
+        return landingDateTime;
+    }
+
     private List<FlightDTO> toFlightDTO(Response response, Map<String, LocalDateTime> flightLandingDates) {
         JsonNode responseContent = response.readEntity(JsonNode.class);
 
@@ -106,31 +140,48 @@ public class VuelingService implements AirlineService {
                 LocalDateTime departureDateTime = LocalDateTime.parse(departureDateString, dateFormatter);
                 flight.setDepartureDate(departureDateTime);
 
-                // Landing Date form the response has the hour set to 0, therefore the
-                // additional
-                // response is used to get the flights
-                String flightNumber = flightResponse.get("FlightID").asText();
                 LocalDateTime landingDateTime;
-                if (flightLandingDates.containsKey(flightNumber)) {
-                    landingDateTime = flightLandingDates.get(flightNumber);
-                } else {
-                    String landingDateString = flightResponse.get("ArrivalDate").asText();
-                    landingDateTime = LocalDateTime.parse(landingDateString, dateFormatter);
-                }
+
+                landingDateTime = this.extractLandingDate(flightLandingDates, dateFormatter, flightResponse,
+                        departureDateTime);
                 flight.setLandingDate(landingDateTime);
 
                 int duration = DateUtils.calculateFlightDuration(departureDateTime, landingDateTime);
                 flight.setDuration(duration);
 
+                flight.setAirlineName(AIRLINE_NAME);
+
                 flights.add(flight);
             }
         } else {
-            throw new ErrorFetchingDataException();
+            throw new ErrorFetchingDataException(new RuntimeException("Unexpected content toFlightDTO"));
         }
 
         flights.sort(Comparator.comparing(FlightDTO::getDepartureDate));
         return flights;
 
+    }
+
+    private void extractDayFlights(DateTimeFormatter landingDateFormatter,
+            Map<String, LocalDateTime> flightLandingDates,
+            JsonNode dayTimetables) {
+        String date = dayTimetables.get("Date").asText();
+
+        JsonNode dayFlights = dayTimetables.get("FlightSegments");
+        if (dayFlights.isArray()) {
+            // Each flight in date
+            for (JsonNode dayFlight : dayFlights) {
+                String flightNumber = dayFlight.get("FlightNumber").asText();
+                String arrivalTime = dayFlight.get("ArrivalTime").asText();
+
+                LocalDateTime landingDate = LocalDateTime.parse(date + arrivalTime,
+                        landingDateFormatter);
+
+                // Key is date + flight number. As the same flight number is used
+                // many times in different days
+                flightLandingDates.put(date + flightNumber, landingDate);
+            }
+        }
     }
 
     private Map<String, LocalDateTime> processLandingDatesResponse(Response response) {
@@ -148,27 +199,13 @@ public class VuelingService implements AirlineService {
                 if (monthTimetables.isArray()) {
                     // Each day
                     for (JsonNode dayTimetables : monthTimetables) {
-                        String date = dayTimetables.get("Date").asText();
-
-                        JsonNode dayFlights = dayTimetables.get("FlightSegments");
-                        if (dayFlights.isArray()) {
-                            // Each flight in date
-                            for (JsonNode dayFlight : dayFlights) {
-                                String flightNumber = dayFlight.get("FlightNumber").asText();
-                                String arrivalTime = dayFlight.get("ArrivalTime").asText();
-
-                                LocalDateTime landingDate = LocalDateTime.parse(date + arrivalTime,
-                                        landingDateFormatter);
-                                flightLandingDates.put(flightNumber, landingDate);
-                            }
-                        }
-
+                        this.extractDayFlights(landingDateFormatter, flightLandingDates, dayTimetables);
                     }
 
                 }
             }
         } else {
-            throw new ErrorFetchingDataException();
+            throw new ErrorFetchingDataException(new RuntimeException("Unexpected content"));
         }
 
         return flightLandingDates;
@@ -194,6 +231,8 @@ public class VuelingService implements AirlineService {
                 for (JsonNode connection : airport) {
                     String connectingAirport = connection.get("Connection").asText();
 
+                    // If there is a connecting airport it means is not a direct connection
+                    // so it has to be filtered out
                     if (!connectingAirport.equals("")) {
                         continue;
                     }
@@ -205,7 +244,7 @@ public class VuelingService implements AirlineService {
                     connections.add(connectionDTO);
                 }
             } else {
-                throw new ErrorFetchingDataException();
+                throw new ErrorFetchingDataException(new RuntimeException("Unexpected content"));
             }
 
         }
@@ -224,7 +263,7 @@ public class VuelingService implements AirlineService {
         try {
             response = vuelingQueryService.getFlightsForDate(parameters);
         } catch (ClientWebApplicationException exception) {
-            throw new ErrorFetchingDataException();
+            throw new ErrorFetchingDataException(exception);
         }
 
         flights = toFlightDTO(response, flightLandingDates);
@@ -239,7 +278,7 @@ public class VuelingService implements AirlineService {
         try {
             response = vuelingQueryService.getFlightsLandingDate(parameters);
         } catch (ClientWebApplicationException exception) {
-            throw new ErrorFetchingDataException();
+            throw new ErrorFetchingDataException(exception);
         }
 
         return processLandingDatesResponse(response);
@@ -252,7 +291,7 @@ public class VuelingService implements AirlineService {
         try {
             response = vuelingQueryService.getAllAirportConnections();
         } catch (ClientWebApplicationException exception) {
-            throw new ErrorFetchingDataException();
+            throw new ErrorFetchingDataException(exception);
         }
 
         connections = toConnectionDTO(response, query);
@@ -270,15 +309,56 @@ public class VuelingService implements AirlineService {
         return flightLandingDates;
     }
 
+    /**
+     * This method is necessary because vueling returns flights through the API when
+     * there are no direct connections. So first through another endpoint is
+     * possible to find connections and then filter here only to search those known
+     * direct connections
+     * 
+     * @param query
+     * @return
+     */
+    private FlightQueryDTO getFilteredQuery(FlightQueryDTO query) {
+        FlightQueryDTO filteredQuery = new FlightQueryDTO();
+        filteredQuery.setStartDate(query.getStartDate());
+        filteredQuery.setEndDate(query.getEndDate());
+
+        List<RouteCombination> routes = new ArrayList<>();
+        for (RouteCombination combination : query.getRoutes()) {
+            List<ConnectionDTO> connections = this
+                    .getAirportConnections(new ConnectionQueryDTO(combination.getOrigin()));
+            for (ConnectionDTO connection : connections) {
+                if (connection.getDestination().equals(combination.getDestination())) {
+                    routes.add(combination);
+                    break;
+                }
+            }
+        }
+
+        filteredQuery.setRoutes(routes);
+
+        return filteredQuery;
+    }
+
     @Override
     @CacheResult(cacheName = "flightsForDateVueling")
     public List<FlightDTO> getCompanyFlights(FlightQueryDTO query) {
-        Map<String, LocalDateTime> flightLandingDates = this.getFlightsLandingDates(query);
-        List<Map<String, String>> parametersSet = buildGetCompanyFlightsParameters(query);
+        FlightQueryDTO filteredQuery = this.getFilteredQuery(query);
+
+        Map<String, LocalDateTime> flightLandingDates = this.getFlightsLandingDates(filteredQuery);
+        List<Map<String, String>> parametersSet = buildGetCompanyFlightsParameters(filteredQuery);
 
         List<FlightDTO> flights = new ArrayList<>();
         for (Map<String, String> parameters : parametersSet) {
-            flights.addAll(this.sendGetFlightsQuery(parameters, flightLandingDates));
+
+            List<FlightDTO> queryFlights = this.sendGetFlightsQuery(parameters, flightLandingDates);
+
+            // Results are by month si a filtering has to be done
+            List<FlightDTO> filteredFlights = queryFlights.stream()
+                    .filter(flight -> flight.getDepartureDate().toLocalDate().isBefore(filteredQuery.getEndDate()))
+                    .collect(Collectors.toList());
+
+            flights.addAll(filteredFlights);
         }
 
         return flights;
@@ -286,7 +366,7 @@ public class VuelingService implements AirlineService {
     }
 
     @Override
-    @CacheResult(cacheName = "airportConnection")
+    @CacheResult(cacheName = "airportConnectionVueling")
     public List<ConnectionDTO> getAirportConnections(ConnectionQueryDTO query) {
         return this.sendGetConnectionsQuery(query);
     }

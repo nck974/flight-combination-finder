@@ -100,7 +100,8 @@ class FlightResourceTest {
     void testGetAllFlights__errorFetchingData() {
         FlightQueryDTO queryDTO = this.getMockQuery();
 
-        when(airlineService.getCompanyFlights(any(FlightQueryDTO.class))).thenThrow(new ErrorFetchingDataException());
+        when(airlineService.getCompanyFlights(any(FlightQueryDTO.class)))
+                .thenThrow(new ErrorFetchingDataException(new RuntimeException()));
 
         given()
                 .contentType(ContentType.JSON)
