@@ -22,7 +22,9 @@ import com.nichoko.domain.dto.FlightRouteDTO;
 import com.nichoko.domain.dto.query.FlightQueryDTO;
 import com.nichoko.domain.dto.query.FlightQueryDTO.RouteCombination;
 import com.nichoko.exception.ErrorFetchingDataException;
-import com.nichoko.service.interfaces.AirlineService;
+import com.nichoko.mock.FlightMock;
+import com.nichoko.service.RyanairService;
+import com.nichoko.service.VuelingService;
 import com.nichoko.service.interfaces.FlightService;
 import com.nichoko.service.interfaces.FlightsRouteService;
 
@@ -30,7 +32,10 @@ import com.nichoko.service.interfaces.FlightsRouteService;
 class FlightResourceTest {
 
     @InjectMock
-    private AirlineService airlineService;
+    private RyanairService ryanairService;
+
+    @InjectMock
+    private VuelingService vuelingService;
 
     @InjectMock
     private FlightService flightService;
@@ -53,10 +58,14 @@ class FlightResourceTest {
         FlightQueryDTO queryDTO = this.getMockQuery();
 
         // Set up mock responses
-        List<FlightDTO> mockFlights = Arrays.asList(new FlightDTO(), new FlightDTO());
+        List<FlightDTO> mockFlights = Arrays.asList(FlightMock.getFlightMock());
         List<FlightRouteDTO> mockRoutes = Arrays.asList(new FlightRouteDTO(), new FlightRouteDTO());
 
-        when(airlineService.getCompanyFlights(any(FlightQueryDTO.class))).thenReturn(mockFlights);
+        // Mock company queries. New companies have to be added here
+        when(ryanairService.getCompanyFlights(any(FlightQueryDTO.class))).thenReturn(mockFlights);
+        when(vuelingService.getCompanyFlights(any(FlightQueryDTO.class))).thenReturn(new ArrayList<>());
+
+        // Mock db and routes
         when(flightService.saveFlights(anyList())).thenReturn(mockFlights);
         when(flightsRouteService.getAvailableRoutes(any(FlightQueryDTO.class), anyList())).thenReturn(mockRoutes);
 
@@ -70,7 +79,8 @@ class FlightResourceTest {
                 .body("availableRoutes.size()", is(mockRoutes.size()));
 
         // Verify method invocations
-        verify(airlineService, times(1)).getCompanyFlights(any(FlightQueryDTO.class));
+        verify(ryanairService, times(1)).getCompanyFlights(any(FlightQueryDTO.class));
+        verify(vuelingService, times(1)).getCompanyFlights(any(FlightQueryDTO.class));
         verify(flightService, times(1)).saveFlights(anyList());
         verify(flightsRouteService, times(1)).getAvailableRoutes(any(FlightQueryDTO.class), anyList());
     }
@@ -82,7 +92,11 @@ class FlightResourceTest {
         // Set up mock responses
         List<FlightDTO> mockFlights = new ArrayList<>();
 
-        when(airlineService.getCompanyFlights(any(FlightQueryDTO.class))).thenReturn(mockFlights);
+        // Mock company queries. New companies have to be added here
+        when(ryanairService.getCompanyFlights(any(FlightQueryDTO.class))).thenReturn(mockFlights);
+        when(vuelingService.getCompanyFlights(any(FlightQueryDTO.class))).thenReturn(new ArrayList<>());
+
+        // Mock db ids
         when(flightService.saveFlights(anyList())).thenReturn(mockFlights);
 
         given()
@@ -100,7 +114,9 @@ class FlightResourceTest {
     void testGetAllFlights__errorFetchingData() {
         FlightQueryDTO queryDTO = this.getMockQuery();
 
-        when(airlineService.getCompanyFlights(any(FlightQueryDTO.class)))
+        when(ryanairService.getCompanyFlights(any(FlightQueryDTO.class)))
+                .thenThrow(new ErrorFetchingDataException(new RuntimeException()));
+        when(vuelingService.getCompanyFlights(any(FlightQueryDTO.class)))
                 .thenThrow(new ErrorFetchingDataException(new RuntimeException()));
 
         given()
@@ -114,21 +130,4 @@ class FlightResourceTest {
 
     }
 
-    @Test
-    void testGetAllFlightsTest__testEndpoint() {
-        FlightQueryDTO queryDTO = this.getMockQuery();
-
-        // Set up mock responses
-        List<FlightRouteDTO> mockRoutes = Arrays.asList(new FlightRouteDTO(), new FlightRouteDTO());
-        when(flightsRouteService.getAvailableRoutes(any(FlightQueryDTO.class), anyList())).thenReturn(mockRoutes);
-
-        given()
-                .contentType(ContentType.JSON)
-                .body(queryDTO)
-                .when().post("/backend/flights/test")
-                .then()
-                .statusCode(200)
-                .body("flights.size()", is(3))
-                .body("availableRoutes.size()", is(mockRoutes.size()));
-    }
 }
