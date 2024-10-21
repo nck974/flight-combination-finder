@@ -7,4 +7,5 @@ export interface Flight{
     landingDate: Date;
     createdAt: Date;
     duration: number;
+    airlineName: string;
 }

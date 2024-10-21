@@ -58,6 +58,7 @@ export class FlightCheckerComponent implements OnDestroy {
       landingDate: new Date(2024, 2, 1, 10, 30),
       price: 25.0,
       duration: 4,
+      airlineName: "RYANAIR"
     },
     {
       id: 1,
@@ -68,6 +69,7 @@ export class FlightCheckerComponent implements OnDestroy {
       landingDate: new Date(2024, 2, 1, 14, 30),
       price: 15.0,
       duration: 2,
+      airlineName: "RYANAIR"
     },
     {
       id: 2,
@@ -78,6 +80,7 @@ export class FlightCheckerComponent implements OnDestroy {
       landingDate: new Date(2024, 2, 1, 17, 30),
       price: 50.0,
       duration: 2,
+      airlineName: "VUELING"
     },
   ];
 

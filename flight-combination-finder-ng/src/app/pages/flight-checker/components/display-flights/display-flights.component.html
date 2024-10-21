@@ -67,7 +67,7 @@
             [price]="flight.price"
             [landingDate]="flight.landingDate"
             [departureDate]="flight.departureDate"
-            [backgroundColor]="'#1c1a6c'">
+            [backgroundColor]="flight.airlineName | airlineColor">
           </app-flight-event>
           }
           }

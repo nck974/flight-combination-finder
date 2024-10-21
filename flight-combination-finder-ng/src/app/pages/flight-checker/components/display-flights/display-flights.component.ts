@@ -7,19 +7,21 @@ import { TimeFormatPipe } from '../../../../shared/pipes/time-format.pipe';
 import { Route } from '../../../../model/route';
 import { DateWeekdayPipe } from '../../../../shared/pipes/date-weekday.pipe';
 import { FlightEventComponent } from '../flight-event/flight-event.component';
+import { AirlineColorPipe } from "../../../../shared/pipes/airline-color.pipe";
 
 @Component({
-  selector: 'app-display-flights',
-  standalone: true,
-  imports: [
-    DateFormatPipe,
-    TimeFormatPipe,
-    MatDividerModule,
-    DateWeekdayPipe,
-    FlightEventComponent
-  ],
-  templateUrl: './display-flights.component.html',
-  styleUrl: './display-flights.component.scss'
+    selector: 'app-display-flights',
+    standalone: true,
+    templateUrl: './display-flights.component.html',
+    styleUrl: './display-flights.component.scss',
+    imports: [
+        DateFormatPipe,
+        TimeFormatPipe,
+        MatDividerModule,
+        DateWeekdayPipe,
+        FlightEventComponent,
+        AirlineColorPipe
+    ]
 })
 export class DisplayFlightsComponent implements OnInit {
   @Input() query?: FlightQuery;

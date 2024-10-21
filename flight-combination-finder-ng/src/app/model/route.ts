@@ -3,4 +3,5 @@ export interface Route {
     departureDate: Date;
     landingDate: Date;
     duration: number;
+    airlineName?: string;
 }
