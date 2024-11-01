@@ -1,6 +1,7 @@
 package com.nichoko;
 
 import java.util.List;
+import java.util.ArrayList;
 import org.jboss.resteasy.reactive.RestResponse;
 
 import com.nichoko.domain.dto.ConnectionDTO;
@@ -96,7 +97,15 @@ public class AirportResource {
     @Path("/routes/graph")
     public RestResponse<ConnectionsGraphDTO> getRoutesGraphBetweenAirports(RouteQueryDTO query) {
 
-        List<List<ConnectionDTO>> routes = getRoutesBetweenTwoAirports(query);
+        List<List<ConnectionDTO>> routes = new ArrayList<>();
+        if (query.getDestination() == null || query.getDestination().isEmpty()) {
+            ConnectionQueryDTO connectionQuery = new ConnectionQueryDTO(query.getOrigin());
+            for (ConnectionDTO connection : connectionService.getConnectionsForAirport(connectionQuery)) {
+                routes.add(List.of(connection));
+            }
+        } else {
+            routes = getRoutesBetweenTwoAirports(query);
+        }
 
         ConnectionsGraphDTO graph = connectionsGraphService.getRoutesGraph(routes);
 
