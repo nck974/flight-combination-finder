@@ -1,5 +1,5 @@
 export interface RoutesQuery {
     origin: string;
-    destination: string;
+    destination?: string;
     maxNrConnections: number;
 }
