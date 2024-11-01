@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.reactive.RestResponse;
 
 import com.nichoko.domain.dto.FlightDTO;
@@ -34,12 +35,17 @@ public class FlightResource {
     private Instance<AirlineService> airlineServices;
     private FlightService flightService;
     private FlightsRouteService flightsRouteService;
-
+    
+    
+    @ConfigProperty(name = "com.nichoko.airlines.available-list", defaultValue="RYANAIR") 
+    List<String> availableAirlines;
+    
     @Inject
     FlightResource(
             Instance<AirlineService> airlineServices,
             FlightService flightService,
-            FlightsRouteService flightsRouteService) {
+            FlightsRouteService flightsRouteService
+            ) {
         this.airlineServices = airlineServices;
         this.flightService = flightService;
         this.flightsRouteService = flightsRouteService;
@@ -54,7 +60,14 @@ public class FlightResource {
     @POST
     public RestResponse<ItineraryResponseDTO> getAllFlights(FlightQueryDTO query) {
         List<FlightDTO> flights = new ArrayList<>();
-        for (AirlineService airlineService : this.airlineServices) {
+
+        // Filter the available airlines
+        List<AirlineService> enabledAirlineServices = this.airlineServices.stream()
+                .filter(airlineService -> availableAirlines.contains(airlineService.getAirlineName()))
+                .toList();
+
+        // Get the flights for each airline
+        for (AirlineService airlineService : enabledAirlineServices) {
             log.info("Checking " + airlineService.getAirlineName() + " flights for route:\n"
                     + query.getRoutesCombinations());
             List<FlightDTO> airlineFlights = airlineService.getCompanyFlights(query);

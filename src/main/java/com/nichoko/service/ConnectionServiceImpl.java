@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.nichoko.domain.dao.Connection;
 import com.nichoko.domain.dto.ConnectionDTO;
 import com.nichoko.domain.dto.query.ConnectionQueryDTO;
@@ -35,6 +37,9 @@ public class ConnectionServiceImpl implements ConnectionService {
     ConnectionMapper mapper;
     private ConnectionRepository connectionRepository;
     private Instance<AirlineService> airlineServices;
+
+    @ConfigProperty(name = "com.nichoko.airlines.available-list", defaultValue = "RYANAIR")
+    List<String> availableAirlines;
 
     @Inject
     ConnectionServiceImpl(
@@ -64,7 +69,13 @@ public class ConnectionServiceImpl implements ConnectionService {
             ConnectionQueryDTO connectionQuery = new ConnectionQueryDTO(originAirport);
 
             connectionsForLevel = new ArrayList<>();
-            for (AirlineService airlineService : airlineServices) {
+
+            // Filter the available airlines
+            List<AirlineService> enabledAirlineServices = this.airlineServices.stream()
+                    .filter(airlineService -> availableAirlines.contains(airlineService.getAirlineName()))
+                    .toList();
+
+            for (AirlineService airlineService : enabledAirlineServices) {
                 log.info("Searching connections of " + connectionQuery.getOrigin() + " for airline: "
                         + airlineService.getAirlineName() + "...");
 
