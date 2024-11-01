@@ -69,10 +69,10 @@ public class FlightResource {
         // Get the flights for each airline
         for (AirlineService airlineService : enabledAirlineServices) {
             log.info("Checking " + airlineService.getAirlineName() + " flights for route:\n"
-                    + query.getRoutesCombinations());
+            + query.getRoutesCombinations());
             List<FlightDTO> airlineFlights = airlineService.getCompanyFlights(query);
             log.info("Number of flights found in the route: " + airlineFlights.size());
-
+            
             if (airlineFlights.isEmpty()) {
                 continue;
             }
@@ -80,7 +80,7 @@ public class FlightResource {
             airlineFlights = flightService.saveFlights(airlineFlights);
             flights.addAll(airlineFlights);
         }
-
+        
         if (flights.isEmpty()) {
             throw new NoFlightsFoundException();
         }

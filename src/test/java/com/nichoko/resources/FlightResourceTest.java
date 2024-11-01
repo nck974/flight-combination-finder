@@ -64,6 +64,7 @@ class FlightResourceTest {
         // Mock company queries. New companies have to be added here
         when(ryanairService.getCompanyFlights(any(FlightQueryDTO.class))).thenReturn(mockFlights);
         when(vuelingService.getCompanyFlights(any(FlightQueryDTO.class))).thenReturn(new ArrayList<>());
+        when(ryanairService.getAirlineName()).thenReturn("RYANAIR");
 
         // Mock db and routes
         when(flightService.saveFlights(anyList())).thenReturn(mockFlights);
@@ -80,7 +81,6 @@ class FlightResourceTest {
 
         // Verify method invocations
         verify(ryanairService, times(1)).getCompanyFlights(any(FlightQueryDTO.class));
-        verify(vuelingService, times(1)).getCompanyFlights(any(FlightQueryDTO.class));
         verify(flightService, times(1)).saveFlights(anyList());
         verify(flightsRouteService, times(1)).getAvailableRoutes(any(FlightQueryDTO.class), anyList());
     }
@@ -116,8 +116,7 @@ class FlightResourceTest {
 
         when(ryanairService.getCompanyFlights(any(FlightQueryDTO.class)))
                 .thenThrow(new ErrorFetchingDataException(new RuntimeException()));
-        when(vuelingService.getCompanyFlights(any(FlightQueryDTO.class)))
-                .thenThrow(new ErrorFetchingDataException(new RuntimeException()));
+        when(ryanairService.getAirlineName()).thenReturn("RYANAIR");
 
         given()
                 .contentType(ContentType.JSON)

@@ -26,7 +26,7 @@ if ($project -eq "--angular") {
 }
 if ($project -eq "--quarkus") {
     Write-Host "Building quarkus image..."
-    # quarkus build
+    quarkus build
     docker build -f src/main/docker/Dockerfile.jvm -t nck974/flight-combination-finder:$version .
     docker tag nck974/flight-combination-finder:$version nck974/flight-combination-finder:latest
     docker push nck974/flight-combination-finder:$version
