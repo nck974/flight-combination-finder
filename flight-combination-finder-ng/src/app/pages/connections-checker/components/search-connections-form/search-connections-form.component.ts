@@ -36,7 +36,7 @@ export class SearchConnectionsFormComponent {
     destination: new FormControl("SDR"),
   });
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private readonly formBuilder: FormBuilder) { }
 
   onSubmit() {
     if (!this.formQuery.valid) {

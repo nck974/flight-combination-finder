@@ -14,7 +14,7 @@ export class ConnectionsService {
   private readonly backendUrl = environment.backendUrl;
   private readonly url = `${this.backendUrl}/airports/routes/graph`;
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private readonly httpClient: HttpClient) { }
 
   getFlightConnectionsGraph(query: RoutesQuery): Observable<RoutesGraph> {
 

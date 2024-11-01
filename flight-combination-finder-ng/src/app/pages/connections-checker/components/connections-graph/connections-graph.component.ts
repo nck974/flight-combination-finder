@@ -21,7 +21,7 @@ export class ConnectionsGraphComponent implements OnInit {
   @Output() isLoading: boolean = false;
   options?: EChartsOption;
 
-  constructor(private mapService: MapsService) { }
+  constructor(private readonly mapService: MapsService) { }
 
 
   ngOnInit(): void {

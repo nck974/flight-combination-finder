@@ -36,9 +36,9 @@ export class SearchFlightsFormComponent implements OnInit, OnDestroy {
 
   private parametersSubscription?: Subscription;
 
-  private defaultOrigin = "NUE";
-  private defaultDestination = "SDR";
-  private defaultDateRange = 30 * 24 * 60 * 60 * 1000; // 30 days
+  private readonly defaultOrigin = "NUE";
+  private readonly defaultDestination = "SDR";
+  private readonly defaultDateRange = 30 * 24 * 60 * 60 * 1000; // 30 days
   defaultStartDate = new Date();
   defaultEndDate = new Date(this.defaultStartDate.getTime() + this.defaultDateRange);
 
@@ -53,9 +53,9 @@ export class SearchFlightsFormComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private formBuilder: FormBuilder,
-    private cdr: ChangeDetectorRef,
-    private route: ActivatedRoute) { }
+    private readonly formBuilder: FormBuilder,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.setUrlParameters();
@@ -144,8 +144,8 @@ export class SearchFlightsFormComponent implements OnInit, OnDestroy {
 
     const query: FlightQuery = {
       routes: this.getAllRoutes(),
-      startDate: new Date(this.formQuery.value.startDate!),
-      endDate: new Date(this.formQuery.value.endDate!),
+      startDate: new Date(this.formQuery.value.startDate),
+      endDate: new Date(this.formQuery.value.endDate),
     };
     console.debug("Emitting query...");
     console.debug(query);

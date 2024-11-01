@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class MapsService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
   getWorldMap(): Observable<any> {
     return this.http.get('assets/maps/world.json');

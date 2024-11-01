@@ -84,7 +84,7 @@ export class FlightCheckerComponent implements OnDestroy {
     },
   ];
 
-  constructor(private flightService: FlightsService) { }
+  constructor(private readonly flightService: FlightsService) { }
 
   ngOnDestroy(): void {
     this.flightSearchSubscription?.unsubscribe();
