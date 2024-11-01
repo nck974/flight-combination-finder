@@ -24,7 +24,7 @@ This app tries to solve this problem by:
 The app currently has the following airlines implemented. An extension would be possible depending on the availability of the airline API's.:
 
 * ✅ Ryanair
-* ✅ Vueling
+* ❎ Vueling (Flight requests are being blocked by Akami)
 
 ## Usage
 
