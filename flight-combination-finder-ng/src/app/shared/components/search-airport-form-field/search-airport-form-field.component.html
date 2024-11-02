@@ -1,0 +1,20 @@
+<mat-form-field class="example-form-field">
+    <mat-label>{{label}}</mat-label>
+    <input matInput type="text" [formControl]="control"
+        id="origin" [matAutocomplete]="auto" required>
+    <mat-progress-spinner
+        *ngIf="isLoading"
+        matSuffix
+        diameter="20"
+        mode="indeterminate">
+    </mat-progress-spinner>
+    <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngIf="isLoading">
+            Loading...
+        </mat-option>
+        <mat-option *ngFor="let option of foundAirports$ | async"
+            [value]="option.iataCode">
+            {{option.name}}
+        </mat-option>
+    </mat-autocomplete>
+</mat-form-field>

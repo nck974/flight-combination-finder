@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FlightQuery, FlightRoute } from '../../../../model/flight-query';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { SearchAirportFormFieldComponent } from '../../../../shared/components/search-airport-form-field/search-airport-form-field.component';
 
 @Component({
   selector: 'app-search-flights-form',
@@ -25,6 +26,7 @@ import { Subscription } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     MatInputModule,
+    SearchAirportFormFieldComponent
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './search-flights-form.component.html',
@@ -50,6 +52,11 @@ export class SearchFlightsFormComponent implements OnInit, OnDestroy {
 
   get routesControl() {
     return this.formQuery.get("routes") as FormArray;
+  }
+
+  getRouteFormControl(groupNumber: number, formControlName: string): FormControl {
+    const routes = this.formQuery.get("routes") as FormArray;
+    return routes.at(groupNumber).get(formControlName) as FormControl;
   }
 
   constructor(

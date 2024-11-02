@@ -7,6 +7,7 @@ import { MatError, MatFormFieldModule, MatHint, MatLabel } from '@angular/materi
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { RoutesQuery } from '../../../../model/routes-query';
+import { SearchAirportFormFieldComponent } from '../../../../shared/components/search-airport-form-field/search-airport-form-field.component';
 
 
 @Component({
@@ -23,6 +24,7 @@ import { RoutesQuery } from '../../../../model/routes-query';
     MatButtonModule,
     MatIconModule,
     MatInputModule,
+    SearchAirportFormFieldComponent
   ],
   templateUrl: './search-connections-form.component.html',
   styleUrl: './search-connections-form.component.scss'
@@ -37,6 +39,14 @@ export class SearchConnectionsFormComponent {
   });
 
   constructor(private readonly formBuilder: FormBuilder) { }
+
+  get originFormControl() {
+    return this.formQuery.get("origin") as FormControl;
+  }
+
+  get destinationFormControl() {
+    return this.formQuery.get("destination") as FormControl;
+  }
 
   onSubmit() {
     if (!this.formQuery.valid) {

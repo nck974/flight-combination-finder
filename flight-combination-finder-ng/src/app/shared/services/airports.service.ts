@@ -1,30 +1,27 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from '../../../environment/environment';
-import { RoutesGraph } from '../../model/graph/routes-graph';
+import { Airport } from '../../model/airport';
 import { ResponseError } from '../../model/response-error';
-import { RoutesQuery } from '../../model/routes-query';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ConnectionsService {
+export class AirportsService {
 
-  private readonly url = `${environment.backendUrl}/airports/routes/graph`;
+  private readonly url = `${environment.backendUrl}/airports`;
 
   constructor(private readonly httpClient: HttpClient) { }
 
-  getFlightConnectionsGraph(query: RoutesQuery): Observable<RoutesGraph> {
+  searchAirports(query: string): Observable<Airport[]> {
 
-    let data = JSON.stringify(query);
     const headers = new HttpHeaders({ 'Content-Type': 'application/json; charset=utf-8' });
 
-    return this.httpClient.post<RoutesGraph>(this.url, data, { headers: headers })
+    const params = `airport=${query}`;
+
+    return this.httpClient.get<Airport[]>(`${this.url}/search?${params}`, { headers: headers })
       .pipe(
-        map(response => ({
-          ...response
-        })),
         catchError(
           (error: HttpErrorResponse) => {
             const responseError: ResponseError = {
@@ -37,4 +34,5 @@ export class ConnectionsService {
         )
       );
   }
+
 }

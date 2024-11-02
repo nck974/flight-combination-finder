@@ -26,20 +26,16 @@
         <div class="route-fields">
           <!-- Origin -->
           <div>
-            <mat-form-field class="example-form-field">
-              <mat-label>Origin</mat-label>
-              <input matInput type="text" formControlName="origin"
-                id="origin-{{i}}" required>
-            </mat-form-field>
+            <app-search-airport-form-field
+              [control]="getRouteFormControl(i, 'origin')"
+              [label]="'Origin'"></app-search-airport-form-field>
           </div>
 
           <!-- Destination -->
           <div>
-            <mat-form-field class="example-form-field">
-              <mat-label>Destination</mat-label>
-              <input matInput type="text" formControlName="destination"
-                id="destination-{{i}}" required>
-            </mat-form-field>
+            <app-search-airport-form-field
+              [control]="getRouteFormControl(i, 'destination')"
+              [label]="'Destination'"></app-search-airport-form-field>
           </div>
         </div>
         <!-- Single route controls -->

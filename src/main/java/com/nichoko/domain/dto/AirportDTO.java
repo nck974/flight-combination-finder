@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class AirportDTO {
     public String iataCode;
+    public String icaoCode;
     public String name;
     public double latDecimal;
     public double lonDecimal;
