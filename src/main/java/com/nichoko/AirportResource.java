@@ -2,19 +2,25 @@ package com.nichoko;
 
 import java.util.List;
 import java.util.ArrayList;
+
+import org.jboss.resteasy.reactive.RestQuery;
 import org.jboss.resteasy.reactive.RestResponse;
 
+import com.nichoko.domain.dto.AirportDTO;
 import com.nichoko.domain.dto.ConnectionDTO;
 import com.nichoko.domain.dto.graph.ConnectionsGraphDTO;
 import com.nichoko.domain.dto.query.ConnectionQueryDTO;
 import com.nichoko.domain.dto.query.RouteQueryDTO;
 import com.nichoko.domain.dto.response.ConnectionResponseDTO;
 import com.nichoko.domain.dto.response.RouteResponseDTO;
+import com.nichoko.exception.MissingParametersExceptions;
+import com.nichoko.service.interfaces.AirportService;
 import com.nichoko.service.interfaces.ConnectionService;
 import com.nichoko.service.interfaces.ConnectionsGraphService;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -29,11 +35,14 @@ public class AirportResource {
 
     private ConnectionService connectionService;
     private ConnectionsGraphService connectionsGraphService;
+    private AirportService airportService;
 
     @Inject
-    AirportResource(ConnectionService connectionService, ConnectionsGraphService connectionsGraphService) {
+    AirportResource(ConnectionService connectionService, ConnectionsGraphService connectionsGraphService,
+            AirportService airportService) {
         this.connectionService = connectionService;
         this.connectionsGraphService = connectionsGraphService;
+        this.airportService = airportService;
     }
 
     /**
@@ -110,6 +119,26 @@ public class AirportResource {
         ConnectionsGraphDTO graph = connectionsGraphService.getRoutesGraph(routes);
 
         return RestResponse.ok(graph);
+    }
+
+    /**
+     * Search airports matching a given string
+     * 
+     * @param airport
+     * @return
+     */
+    @GET
+    @Path("/search")
+    public RestResponse<List<AirportDTO>> searchAirports(@RestQuery String airport) {
+
+        if (airport == null || airport.isBlank()) {
+            throw new MissingParametersExceptions("airport");
+        }
+
+        log.info("Searching for airport containing: '" + airport + "'...");
+        List<AirportDTO> airports = airportService.searchAirports(airport);
+
+        return RestResponse.ok(airports);
     }
 
 }
