@@ -39,7 +39,7 @@ public class AirportServiceImpl implements AirportService {
     @Override
     public List<AirportDTO> searchAirports(String query) {
         List<Airport> airports = airportRepository
-                .find("name ILIKE :query or city ILIKE :query or iataCode ILIKE :query or icaoCode ILIKE :query",
+                .find("(name ILIKE :query or city ILIKE :query or iataCode ILIKE :query or icaoCode ILIKE :query) and name is not null and name != 'N/A'",
                         Parameters.with("query", "%" + query + "%"))
                 .list();
 
